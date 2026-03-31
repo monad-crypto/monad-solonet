@@ -1,0 +1,32 @@
+name: Pre-commit
+
+on:
+  pull_request:
+
+jobs:
+  pre-commit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: Install pre-commit
+        run: pip install pre-commit==4.5.1
+
+      - name: Run pre-commit hooks
+        run: |
+          git log --format="%B" ${{ github.event.pull_request.base.sha }}..${{ github.event.pull_request.head.sha }} | \
+          while IFS= read -r line; do
+            [ -z "$line" ] && continue
+            tmpfile=$(mktemp)
+            echo "$line" > "$tmpfile"
+            pre-commit run \
+              --hook-stage commit-msg \
+              --commit-msg-filename "$tmpfile" || exit 1
+            rm "$tmpfile"
+          done
