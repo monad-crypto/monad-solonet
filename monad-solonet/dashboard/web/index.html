@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monad Solonet</title>
+    <link rel="icon" href="https://www.monad.xyz/favicon.ico">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <img src="https://www.monad.xyz/favicon.ico" alt="Monad123lkj">
+            <h1>Monad Solonet</h1>
+            <span class="badge">Local Environment</span>
+        </header>
+
+        <div class="card">
+            <div class="stat-grid">
+                <div>
+                    <div class="label">Block Height</div>
+                    <div id="blockHeight" class="value">...</div>
+                </div>
+                <div>
+                    <div class="label">Chain ID</div>
+                    <div id="networkId" class="value">...</div>
+                </div>
+            </div>
+            
+            <div class="wallet-section">
+                <div id="walletContent">
+                    <button class="btn-connect" onclick="connectWallet()">Connect MetaMask Account</button>
+                </div>
+                <div id="accountInfo" style="display:none;">
+                    <div class="stat-grid">
+                        <div>
+                            <div class="label">My Balance</div>
+                            <div id="myBalance" class="value" style="color:var(--monad-berry)">0.00 MON</div>
+                        </div>
+                        <div>
+                            <div class="label" style="display: flex; justify-content: space-between;">
+                                <span>Address</span>
+                                <a href="#" onclick="disconnectWallet()" class="disconnect-link">DISCONNECT</a>
+                            </div>
+                            <div class="address-container" onclick="copyAddress()">
+                                <div id="myAddress" class="address-display">0x...</div>
+                                <span id="copyFeedback" class="copy-feedback">Copied!</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <button class="btn-mm" onclick="registerToMetaMask()">Add Network to MetaMask</button>
+        </div>
+
+        <div class="card">
+            <h3>Transfer MON</h3>
+            <div class="search-container">
+                <input type="text" id="transferTo" placeholder="Recipient Address (0x...)">
+            </div>
+            <div class="search-container" style="margin-top: 10px;">
+                <input type="number" id="transferAmount" step="0.01" placeholder="Amount in MON">
+                <button class="btn-search" style="background: var(--monad-berry);" onclick="sendTransaction()">Send MON</button>
+            </div>
+            <div id="transferStatus" style="display:none; margin-top:1rem;">
+                <pre id="transferResult"></pre>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>Transaction Inspector</h3>
+            <div class="search-container">
+                <input type="text" id="txHashInput" placeholder="0x transaction hash...">
+                <button class="btn-search" onclick="lookupTransaction()">Inspect TX</button>
+            </div>
+            <div id="txResult" style="display:none; margin-top:1.5rem;">
+                <pre id="txContent"></pre>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>Block Inspector</h3>
+            <div class="search-container">
+                <input type="text" id="blockInput" placeholder="Block number or hash...">
+                <button class="btn-search" onclick="lookupBlock()">View Block</button>
+            </div>
+            <div id="blockResult" style="display:none; margin-top:1.5rem;">
+                <pre id="blockContent"></pre>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

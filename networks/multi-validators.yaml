@@ -1,0 +1,88 @@
+volumes:
+  shared-data:
+
+networks:
+  solonet:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.21.0.0/24
+
+services:
+  init:
+    build: ../monad-solonet
+    command: ["setup-monad-sysctl.sh"]
+    privileged: true
+    network_mode: "host"
+    volumes:
+      - /:/host
+
+  solonet-node-1:
+    container_name: solonet-node-1
+    build: ../monad-solonet
+    depends_on:
+      init:
+        condition: service_completed_successfully
+    networks:
+      solonet:
+        ipv4_address: 172.21.0.11
+    privileged: true
+    ports:
+      - 8080:8080
+      - 8081:8081
+    ulimits:
+      nofile:
+        soft: 16384
+        hard: 16384
+    volumes:
+      - shared-data:/shared
+    environment:
+      NODE_ID: 1
+      NODE_TYPE: validator
+      TOTAL_NODE_NUMBER: 3
+
+  solonet-node-2:
+    container_name: solonet-node-2
+    depends_on:
+      init:
+        condition: service_completed_successfully
+    networks:
+      solonet:
+        ipv4_address: 172.21.0.12
+    build: ../monad-solonet
+    privileged: true
+    ports:
+      - 8082:8080
+    ulimits:
+      nofile:
+        soft: 16384
+        hard: 16384
+    environment:
+      NODE_ID: 2
+      NODE_TYPE: validator
+      TOTAL_NODE_NUMBER: 3
+    volumes:
+      - shared-data:/shared
+
+  solonet-node-3:
+    container_name: solonet-node-3
+    depends_on:
+      init:
+        condition: service_completed_successfully
+    networks:
+      solonet:
+        ipv4_address: 172.21.0.13
+    build: ../monad-solonet
+    privileged: true
+    ports:
+      - 8083:8080
+    ulimits:
+      nofile:
+        soft: 16384
+        hard: 16384
+    environment:
+      NODE_ID: 3
+      NODE_TYPE: validator
+      TOTAL_NODE_NUMBER: 3
+    volumes:
+      - shared-data:/shared

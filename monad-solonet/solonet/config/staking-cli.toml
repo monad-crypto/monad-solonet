@@ -1,0 +1,22 @@
+# Staking-cli config file
+title = "staking_cli"
+rpc_url = "http://localhost:8080"
+contract_address = "0x0000000000000000000000000000000000001000"
+# debug, info
+log_level = "info"
+chain_id = 20143
+
+[staking]
+
+# Account 0 - 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266
+# funded_address_private_key = "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80"
+
+# Account 1 - 0x70997970C51812dc3A010C7d01b50e0d17dc79C8
+funded_address_private_key = "0x59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b78690d"
+
+[colors]
+border = "white"
+main = "red"
+primary_text = "cyan"
+secondary_text = "green"
+highlight = "yellow"

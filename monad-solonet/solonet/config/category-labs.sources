@@ -1,0 +1,5 @@
+Types: deb
+URIs: https://pkg.category.xyz/
+Suites: noble
+Components: main
+Signed-By: /etc/apt/keyrings/category-labs.gpg

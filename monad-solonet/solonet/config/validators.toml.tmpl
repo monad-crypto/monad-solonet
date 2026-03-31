@@ -1,0 +1,18 @@
+{{ $peers := coll.Slice -}}
+{{- range (datasource "peers") -}}
+    {{- $path := printf "/shared/peers/%s" . -}}
+    {{- $peer := file.Read $path | data.YAML -}}
+    {{- $peers = coll.Append $peer $peers -}}
+{{- end -}}
+
+[[validator_sets]]
+epoch = 1
+
+{{ range $peers }}
+{{- if eq .node_type "validator" }}
+[[validator_sets.validators]]
+node_id = "0x{{ .secp256k1.public_key }}"
+stake = 1
+cert_pubkey = "0x{{ .bls.public_key }}"
+{{- end }}
+{{ end }}
