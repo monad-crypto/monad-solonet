@@ -82,6 +82,7 @@ is_1g_hugepages_cpu() {
 }
 
 show_rpc_methods() {
-  tail -n 0 -f /var/log/monad-rpc.log | jq --unbuffered -r \
-    'select(.fields.body) | .fields.body | ltrimstr("b") | fromjson | fromjson | . as $req | $req.method, ($req.params // [] | map("\t" + tostring)[])'
+  tail -n 0 -F /var/log/monad-rpc.log | grep --line-buffered '"body"' | while IFS= read -r line; do
+    echo "$line" | jq -r 'select(.fields.body) | .fields.body | ltrimstr("b") | fromjson | fromjson | if type == "array" then "BATCH (" + (length | tostring) + ")\n" + (map("  " + ([.method] + (.params // [] | map(tostring)) | join("  "))) | join("\n")) else [.method] + (.params // [] | map(tostring)) | join("  ") end' 2>/dev/null
+  done
 }
