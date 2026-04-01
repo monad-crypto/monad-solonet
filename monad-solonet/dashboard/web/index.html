@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Monad Solonet</title>
     <link rel="icon" href="https://www.monad.xyz/favicon.ico">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -14,6 +16,16 @@
             <img src="https://www.monad.xyz/favicon.ico" alt="Monad123lkj">
             <h1>Monad Solonet</h1>
             <span class="badge">Local Environment</span>
+            <div class="status-indicators">
+                <div class="status-item">
+                    <span class="status-dot" id="rpcStatus"></span>
+                    <span>RPC</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-dot" id="wsStatus"></span>
+                    <span>WS</span>
+                </div>
+            </div>
         </header>
 
         <div class="card">
@@ -23,8 +35,8 @@
                     <div id="blockHeight" class="value">...</div>
                 </div>
                 <div>
-                    <div class="label">Chain ID</div>
-                    <div id="networkId" class="value">...</div>
+                    <div class="label">Epoch</div>
+                    <div id="epoch" class="value">...</div>
                 </div>
             </div>
             
@@ -36,7 +48,7 @@
                     <div class="stat-grid">
                         <div>
                             <div class="label">My Balance</div>
-                            <div id="myBalance" class="value" style="color:var(--monad-berry)">0.00 MON</div>
+                            <div id="myBalance" class="value" style="color:var(--monad-cyan)">0.00 MON</div>
                         </div>
                         <div>
                             <div class="label" style="display: flex; justify-content: space-between;">
@@ -56,13 +68,51 @@
         </div>
 
         <div class="card">
+            <div class="tabs">
+                <button class="tab active" onclick="switchTab('network', this)">Network Info</button>
+                <button class="tab" onclick="switchTab('accounts', this)">Accounts</button>
+            </div>
+
+            <div id="tab-network" class="tab-panel">
+                <div class="info-grid">
+                    <span class="label">Solonet</span><span id="solonetVersion" class="info-value">—</span>
+                    <span class="label">Network</span><span class="info-value">solonet (devnet)</span>
+                    <span class="label">Chain ID</span><span class="info-value">20143</span>
+                    <span class="label">Revision</span><span class="info-value">MONAD_NEXT</span>
+                    <span class="label">Client</span><span id="clientVersion" class="info-value">—</span>
+                    <span class="label">RPC</span><span class="info-value">http://localhost:8080</span>
+                    <span class="label">WebSocket</span><span class="info-value">ws://localhost:8081</span>
+                    <span class="label">CORS RPC</span><span class="info-value">http://localhost:8082/rpc/</span>
+                    <span class="label">Dashboard</span><span class="info-value">http://localhost:8082</span>
+                </div>
+            </div>
+
+            <div id="tab-accounts" class="tab-panel" style="display:none;">
+                <div class="dev-wallet">
+                    <span class="label">Mnemonic</span>
+                    <span class="dev-mnemonic">test test test test test test test test test test test junk</span>
+                    <span class="label">Derivation Path</span>
+                    <span class="dev-mono">m/44'/60'/0'/0/</span>
+                </div>
+                <div class="accounts-table">
+                    <div class="accounts-header">
+                        <span>#</span>
+                        <span>Address</span>
+                        <span>Private Key</span>
+                    </div>
+                    <div id="accountsList"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
             <h3>Transfer MON</h3>
             <div class="search-container">
                 <input type="text" id="transferTo" placeholder="Recipient Address (0x...)">
             </div>
             <div class="search-container" style="margin-top: 10px;">
                 <input type="number" id="transferAmount" step="0.01" placeholder="Amount in MON">
-                <button class="btn-search" style="background: var(--monad-berry);" onclick="sendTransaction()">Send MON</button>
+                <button class="btn-search" onclick="sendTransaction()">Send MON</button>
             </div>
             <div id="transferStatus" style="display:none; margin-top:1rem;">
                 <pre id="transferResult"></pre>
@@ -92,6 +142,7 @@
         </div>
     </div>
 
+    <script src="version.js"></script>
     <script src="script.js"></script>
 </body>
 </html>

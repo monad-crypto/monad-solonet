@@ -1,6 +1,6 @@
 FROM ubuntu:noble
 
-ARG MONAD_VERSION=0.13.1
+ARG MONAD_VERSION=0.14.0
 ARG OTEL_VERSION=0.139.0
 ARG SOLONET_VERSION=dev
 
@@ -66,6 +66,7 @@ RUN curl -L -o /usr/local/bin/gomplate \
 RUN rm -f /etc/nginx/sites-enabled/default
 COPY dashboard/ /dashboard/
 COPY dashboard/dashboard.conf /etc/nginx/conf.d/.
+RUN echo "window.SOLONET_VERSION='${SOLONET_VERSION}';" > /dashboard/web/version.js
 
 # Setup solonet
 COPY solonet/   /solonet/

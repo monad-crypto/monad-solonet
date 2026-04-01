@@ -1,5 +1,28 @@
 const RPC_URL = `${window.location.origin}/rpc/`;
+const WS_URL = `ws://${window.location.hostname}:8081`;
 let userAddress = null;
+let ws = null;
+const wsPending = {};
+let wsIdCounter = 100;
+
+const ACCOUNTS = [
+  { address: "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266", key: "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80" },
+  { address: "0x70997970C51812dc3A010C7d01b50e0d17dc79C8", key: "0x59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b78690d" },
+  { address: "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC", key: "0x5de4111afa1a4b94908f83103eb1f1706367c2e68ca870fc3fb9a804cdab365a" },
+  { address: "0x90F79bf6EB2c4f870365E785982E1f101E93b906", key: "0x7c852118294e51e653712a81e05800f419141751be58f605c371e15141b007a6" },
+  { address: "0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65", key: "0x47e179ec197488593b187f80a00eb0da91f1b9d0b13f8733639f19c30a34926a" },
+  { address: "0x9965507D1a55bcC2695C58ba16FB37d819B0A4dc", key: "0x8b3a350cf5c34c9194ca85829a2df0ec3153be0318b5e2d3348e872092edffba" },
+  { address: "0x976EA74026E726554dB657fA54763abd0C3a0aa9", key: "0x92db14e403b83dfe3df233f83dfa3a0d7096f21ca9b0d6d6b8d88b2b4ec1564e" },
+  { address: "0x14dC79964da2C08b23698B3D3cc7Ca32193d9955", key: "0x4bbbf85ce3377467afe5d46f804f221813b2bb87f24d81f60f1fcdbf7cbf4356" },
+  { address: "0x23618e81E3f5cdF7f54C3d65f7FBc0aBf5B21E8f", key: "0xdbda1821b80551c9d65939329250298aa3472ba22feea921c0cf5d620ea67b97" },
+  { address: "0xa0Ee7A142d267C1f36714E4a8F75612F20a79720", key: "0x2a871d0798f97d79848a013d4936a73bf4cc922c825d33c1cf7073dff6d409c6" },
+];
+
+function setStatus(id, online) {
+  const dot = document.getElementById(id);
+  dot.classList.toggle('online', online);
+  dot.classList.toggle('offline', !online);
+}
 
 async function rpcCall(method, params = []) {
   const response = await fetch(RPC_URL, {
@@ -11,14 +34,100 @@ async function rpcCall(method, params = []) {
   return data.result;
 }
 
+
+function wsCall(method, params = []) {
+  return new Promise((resolve, reject) => {
+    const id = ++wsIdCounter;
+    wsPending[id] = { resolve, reject };
+    ws.send(JSON.stringify({ jsonrpc: "2.0", id, method, params }));
+  });
+}
+
+async function updateEpoch() {
+  try {
+    const result = await wsCall('eth_call', [
+      { to: '0x0000000000000000000000000000000000001000', data: '0x757991a8' },
+      'latest'
+    ]);
+    if (!result) return;
+    const hex = result.slice(2);
+    const epoch = BigInt('0x' + hex.slice(0, 64));
+    const inDelay = hex.slice(126, 128) === '01';
+    document.getElementById('epoch').innerText =
+      epoch.toLocaleString() + (inDelay ? ' (delay)' : '');
+  } catch (e) { console.error('epoch fetch failed', e); }
+}
+
+function connectBlockHeightWS() {
+  ws = new WebSocket(WS_URL);
+
+  ws.onopen = () => {
+    setStatus('wsStatus', true);
+    ws.send(JSON.stringify({ jsonrpc: "2.0", id: 1, method: "eth_subscribe", params: ["newHeads"] }));
+  };
+
+  ws.onmessage = (event) => {
+    const msg = JSON.parse(event.data);
+
+    if (msg.id && wsPending[msg.id]) {
+      wsPending[msg.id].resolve(msg.result);
+      delete wsPending[msg.id];
+      return;
+    }
+
+    const block = msg?.params?.result;
+    if (block?.number) {
+      document.getElementById('blockHeight').innerText = parseInt(block.number, 16).toLocaleString();
+      updateEpoch();
+      if (userAddress) updateBalance();
+    }
+  };
+
+  ws.onclose = () => { setStatus('wsStatus', false); setTimeout(connectBlockHeightWS, 2000); };
+  ws.onerror = (e) => { setStatus('wsStatus', false); console.error("WS error", e); };
+}
+
+function switchTab(name, btn) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.style.display = 'none');
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + name).style.display = '';
+  btn.classList.add('active');
+}
+
+function renderAccounts() {
+  const list = document.getElementById('accountsList');
+  list.innerHTML = ACCOUNTS.map((a, i) => `
+    <div class="account-row">
+      <span class="account-index">${i}</span>
+      <div class="account-cell">
+        <span title="${a.address}">${a.address.slice(0, 10)}…${a.address.slice(-8)}</span>
+        <button class="copy-btn" onclick="copyText('${a.address}', this)">copy</button>
+      </div>
+      <div class="account-cell key">
+        <span title="${a.key}">${a.key.slice(0, 10)}…${a.key.slice(-8)}</span>
+        <button class="copy-btn" onclick="copyText('${a.key}', this)">copy</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+async function copyText(text, btn) {
+  await navigator.clipboard.writeText(text);
+  const orig = btn.innerText;
+  btn.innerText = '✓';
+  setTimeout(() => btn.innerText = orig, 1200);
+}
+
 async function updateStats() {
   try {
-    const hexHeight = await rpcCall('eth_blockNumber');
-    if (hexHeight) document.getElementById('blockHeight').innerText = parseInt(hexHeight, 16).toLocaleString();
-    const netId = await rpcCall('net_version');
-    if (netId) document.getElementById('networkId').innerText = netId;
+    const clientVer = await rpcCall('web3_clientVersion');
+    if (clientVer) document.getElementById('clientVersion').innerText = clientVer;
     if (userAddress) updateBalance();
-  } catch (e) { console.error(e); }
+    setStatus('rpcStatus', true);
+  } catch (e) {
+    setStatus('rpcStatus', false);
+    console.error(e);
+  }
 }
 
 async function connectWallet() {
@@ -119,11 +228,11 @@ async function sendTransaction() {
 
     // Broadcast Info
     res.innerHTML = `
-      <div style="display: grid; grid-template-columns: 120px 1fr; gap: 5px; font-family: 'JetBrains Mono', monospace;">
+      <div style="display: grid; grid-template-columns: 120px 1fr; gap: 5px; font-family: 'Roboto Mono', monospace;">
         <span style="color:var(--monad-dim)">TX Hash:</span>
         <span style="color:#fff; word-break: break-all;">${txHash}</span>
         <span style="color:var(--monad-dim)">Status:</span>
-        <span style="color:var(--monad-purple)">⏳ Sequencing...</span>
+        <span style="color:var(--monad-cyan)">⏳ Sequencing...</span>
       </div>
     `;
 
@@ -138,13 +247,13 @@ async function sendTransaction() {
 
     // --- 4. FINALIZED UI ---
     res.innerHTML = `
-      <div style="display: grid; grid-template-columns: 120px 1fr; gap: 5px; font-family: 'JetBrains Mono', monospace;">
+      <div style="display: grid; grid-template-columns: 120px 1fr; gap: 5px; font-family: 'Roboto Mono', monospace;">
         <span style="color:var(--monad-dim)">TX Hash:</span>
         <span style="color:#fff; word-break: break-all;">${txHash}</span>
       </div>
       <div style="margin-top: 15px; padding-top: 10px; border-top: 1px dashed var(--monad-border);">
-        <div style="color:var(--monad-berry); font-weight:bold; margin-bottom: 5px;">⚡ TRANSACTION FINALIZED</div>
-        <div style="display: grid; grid-template-columns: 120px 1fr; gap: 5px; font-family: 'JetBrains Mono', monospace;">
+        <div style="color:var(--monad-cyan); font-weight:bold; margin-bottom: 5px; font-family:'Roboto Mono',monospace; font-size:0.75rem; letter-spacing:0.08em;">⚡ TRANSACTION FINALIZED</div>
+        <div style="display: grid; grid-template-columns: 120px 1fr; gap: 5px; font-family: 'Roboto Mono', monospace;">
             <span style="color:var(--monad-dim)">Receipt Hash:</span>
             <span style="color:#fff; word-break: break-all;">${receipt.transactionHash}</span>
             <span style="color:var(--monad-dim)">Inclusion Time:</span>
@@ -194,5 +303,8 @@ async function registerToMetaMask() {
   }).catch(e => alert(e.message));
 }
 
+document.getElementById('solonetVersion').innerText = window.SOLONET_VERSION ?? '—';
+renderAccounts();
+connectBlockHeightWS();
 updateStats();
-setInterval(updateStats, 3000);
+setInterval(updateStats, 10000);
