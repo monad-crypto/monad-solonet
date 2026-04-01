@@ -6,36 +6,7 @@ fi
 VERSION="$(monad-node --version 2>/dev/null | cut -d ' ' -f2 | jq -r .tag)"
 NODES="$(yq -r '"  \(.node_name): \(.secp256k1.public_key)"' /shared/peers/* | sort)"
 
-log "NETWORK STARTED! 🚀"
-echo
-printf "\033[38;2;131;110;249m ███████╗ ██████╗ ██╗      ██████╗ ███╗   ██╗███████╗████████╗\033[0m\n"
-printf "\033[38;2;131;110;249m ██╔════╝██╔═══██╗██║     ██╔═══██╗████╗  ██║██╔════╝╚══██╔══╝\033[0m\n"
-printf "\033[38;2;131;110;249m ███████╗██║   ██║██║     ██║   ██║██╔██╗ ██║█████╗     ██║   \033[0m\n"
-printf "\033[38;2;131;110;249m ╚════██║██║   ██║██║     ██║   ██║██║╚██╗██║██╔══╝     ██║   \033[0m\n"
-printf "\033[38;2;131;110;249m ███████║╚██████╔╝███████╗╚██████╔╝██║ ╚████║███████╗   ██║   \033[0m\n"
-printf "\033[38;2;131;110;249m ╚══════╝ ╚═════╝ ╚══════╝ ╚═════╝ ╚═╝  ╚═══╝╚══════╝   ╚═╝   %s\033[0m\n" "${SOLONET_VERSION:-dev}"
-echo
-echo "General information"
-echo "==================="
-echo
-echo "Network name:        solonet"
-echo "Network type:        devnet"
-echo "Chain ID:            20143"
-echo "Monad revision:      MONAD_NEXT"
-echo "Node name:           $NODE_NAME"
-echo "Client version:      $VERSION"
-echo "BFT Logs:            /var/log/monad-bft.log"
-echo "Execution Logs:      /var/log/monad-execution.log"
-echo "RPC Logs:            /var/log/monad-rpc.log"
-echo "Ledger tail Logs:    /var/log/monad-ledger-tail.log"
-echo "Total nodes:         $TOTAL_NODE_NUMBER"
-echo "Nodes:"
-echo "$NODES"
-echo
-echo "Raw RPC endpoint:    http://localhost:8080"
-echo "Dashboard            http://localhost:8081"
-echo "CORS RPC endpoint:   http://localhost:8081/rpc/"
-echo
+log "Initial delegation"
 echo "Available Accounts"
 echo "=================="
 echo
@@ -71,4 +42,33 @@ echo "Derivation path:   m/44'/60'/0'/0/"
 echo
 echo
 
-show_rpc_methods
+log "NETWORK STARTED! 🚀"
+echo
+printf "\033[38;2;131;110;249m ███████╗ ██████╗ ██╗      ██████╗ ███╗   ██╗███████╗████████╗\033[0m\n"
+printf "\033[38;2;131;110;249m ██╔════╝██╔═══██╗██║     ██╔═══██╗████╗  ██║██╔════╝╚══██╔══╝\033[0m\n"
+printf "\033[38;2;131;110;249m ███████╗██║   ██║██║     ██║   ██║██╔██╗ ██║█████╗     ██║   \033[0m\n"
+printf "\033[38;2;131;110;249m ╚════██║██║   ██║██║     ██║   ██║██║╚██╗██║██╔══╝     ██║   \033[0m\n"
+printf "\033[38;2;131;110;249m ███████║╚██████╔╝███████╗╚██████╔╝██║ ╚████║███████╗   ██║   \033[0m\n"
+printf "\033[38;2;131;110;249m ╚══════╝ ╚═════╝ ╚══════╝ ╚═════╝ ╚═╝  ╚═══╝╚══════╝   ╚═╝   %s\033[0m\n" "${SOLONET_VERSION:-dev}"
+echo
+echo "Network name:        solonet"
+echo "Network type:        devnet"
+echo "Chain ID:            20143"
+echo "Monad revision:      MONAD_NEXT"
+echo "Node name:           $NODE_NAME"
+echo "Client version:      $VERSION"
+echo "BFT Logs:            /var/log/monad-bft.log"
+echo "Execution Logs:      /var/log/monad-execution.log"
+echo "RPC Logs:            /var/log/monad-rpc.log"
+echo "Ledger tail Logs:    /var/log/monad-ledger-tail.log"
+echo "Total nodes:         $TOTAL_NODE_NUMBER"
+echo "Nodes:"
+echo "$NODES"
+echo
+echo "RPC endpoint:        http://localhost:8080"
+echo "WebSocket endpoint:  ws://localhost:8081"
+echo "Dashboard            http://localhost:8082"
+echo "CORS RPC endpoint:   http://localhost:8082/rpc/"
+echo
+
+show_rpc_methods || true

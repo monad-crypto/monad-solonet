@@ -18,6 +18,8 @@ log "Get keys from shared volume"
 mkdir -p /home/monad/monad-bft/config/
 mkdir -p /home/monad/monad-bft/config/forkpoint/
 mkdir -p /home/monad/monad-bft/config/validators/
+mkdir -p /var/lib/hugetlbfs/user/monad/pagesize-2MB/event-rings/
+
 cp "/shared/keys/$NODE_ID/id-secp" /home/monad/monad-bft/config/id-secp
 cp "/shared/keys/$NODE_ID/id-bls" /home/monad/monad-bft/config/id-bls
 
