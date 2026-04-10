@@ -77,7 +77,7 @@ jobs:
           ## Docker Image
 
           \`\`\`
-          docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${TAG#v}
+          docker pull ${{ env.IMAGE_NAME }}:${TAG#v}
           \`\`\`
 
           **Digest:** \`${DIGEST}\`
