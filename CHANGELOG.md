@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.1.0](https://github.com/monad-crypto/monad-solonet/compare/v1.0.0...v1.1.0) (2026-04-10)
+
+
+### Features
+
+* first commit ([4abe6a4](https://github.com/monad-crypto/monad-solonet/commit/4abe6a4b458789f12141a811b721781df2a58e15))
+* first commit ([5519ff9](https://github.com/monad-crypto/monad-solonet/commit/5519ff9ed50e53836181fcd339b8fd550ef465ec))
+
 ## 1.0.0 (2026-03-31)
 
 
