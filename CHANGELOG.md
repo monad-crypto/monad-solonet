@@ -1,5 +1,24 @@
 # Changelog
 
+## [0.2.0](https://github.com/monad-crypto/monad-solonet/compare/v0.1.0...v0.2.0) (2026-04-10)
+
+
+### Features
+
+* add more system checks ([c5d5860](https://github.com/monad-crypto/monad-solonet/commit/c5d5860ee1b722f6720d7a38fd1503d32c52b509))
+* first commit ([3a9506b](https://github.com/monad-crypto/monad-solonet/commit/3a9506b24a5d7564cfa8a0f4e4c9afba2f798188))
+* first commit ([5519ff9](https://github.com/monad-crypto/monad-solonet/commit/5519ff9ed50e53836181fcd339b8fd550ef465ec))
+* implement RPC websocket ([1498888](https://github.com/monad-crypto/monad-solonet/commit/1498888fdc25699ed8853b127ab32fdb19dd9e6e))
+* print epoch ([6d94bce](https://github.com/monad-crypto/monad-solonet/commit/6d94bcef2c951411e570b7bceb0a6a6d418604e7))
+* print node info on dashboard ([0ae9e17](https://github.com/monad-crypto/monad-solonet/commit/0ae9e177cc362f8df0841f7d8864061dd3f66dca))
+* support batched calls on rpc printer ([aaad15e](https://github.com/monad-crypto/monad-solonet/commit/aaad15e261049c5b6032bedaae04c887bf57fb6d))
+* upgrade monad to 0.14.1 ([953aedc](https://github.com/monad-crypto/monad-solonet/commit/953aedc96645699d59012fed2bea119d060e4547))
+
+
+### Bug Fixes
+
+* use correct ports for networks ([8d15003](https://github.com/monad-crypto/monad-solonet/commit/8d15003b3253fe583fbaabf435d6a767765bba5b))
+
 ## [1.1.0](https://github.com/monad-crypto/monad-solonet/compare/v1.0.0...v1.1.0) (2026-04-10)
 
 
