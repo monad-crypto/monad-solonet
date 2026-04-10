@@ -1,0 +1,2 @@
+#!/usr/bin/env bash
+exec /root/staking-sdk-cli/cli-venv/bin/python /root/staking-sdk-cli/staking-cli/main.py "$@" --config /solonet/config/staking-cli.toml

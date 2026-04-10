@@ -1,0 +1,10 @@
+services:
+  solonet:
+    container_name: solonet
+    build: ./monad-solonet
+    network_mode: host
+    privileged: true
+    ulimits:
+      nofile:
+        soft: 16384
+        hard: 16384
