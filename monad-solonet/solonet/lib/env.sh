@@ -1,3 +1,4 @@
+export KEYSTORE_PASSWORD="${KEYSTORE_PASSWORD:-password}"
 export NODE_ID=${NODE_ID:-1}
 export NODE_NAME="node-$NODE_ID"
 
@@ -11,7 +12,7 @@ export DEVICE_SIZE_GB="${DEVICE_SIZE_GB:-6}"
 export CONTAINER_IP_ADDRESS=$(hostname -i 2>/dev/null | awk '{ if (NF==1) print $1; else print "0.0.0.0" }')
 export KEYS_PATH="/shared/keys/"
 export NODE_TYPE="${NODE_TYPE:-validator}" # values: validator, dedicated, public
-export OVERRIDE_MONAD_VERSION=${OVERRIDE_MONAD_VERSION:-}
+export MONAD_VERSION_OVERRIDE=${MONAD_VERSION_OVERRIDE:-}
 export PEERS_PATH="/shared/peers"
 export PEER_FILE="${PEERS_PATH}/${NODE_NAME}.yaml"
 export RUST_LOG=debug,h2=warn,tower=warn,opentelemetry_sdk=warn,opentelemetry-otlp=warn

@@ -318,35 +318,9 @@ function updateNetworkInfo() {
   document.getElementById('infoDashboard').innerText = `http://${host}:${dashboardPort}`;
 }
 
-function setKeyElement(id, fullKey) {
-  const el = document.getElementById(id);
-  el.title = fullKey;
-  el.innerText = fullKey.slice(0, 10) + '…' + fullKey.slice(-8);
-}
-
-async function fetchNodeKeys() {
-  try {
-    const res = await fetch(`/shared/peers/node-${nodeId}.yaml`);
-    if (!res.ok) return;
-    const text = await res.text();
-    let section = null;
-    for (const line of text.split('\n')) {
-      const sectionMatch = line.match(/^(\w+):$/);
-      if (sectionMatch) { section = sectionMatch[1]; continue; }
-      if (section) {
-        const kv = line.match(/^\s+public_key:\s*(.+)$/);
-        if (kv) {
-          if (section === 'secp256k1') setKeyElement('infoSecpKey', kv[1].trim());
-          if (section === 'bls') setKeyElement('infoBlsKey', kv[1].trim());
-        }
-      }
-    }
-  } catch (e) { console.error('Failed to fetch node keys', e); }
-}
 
 document.getElementById('solonetVersion').innerText = window.SOLONET_VERSION ?? '—';
 updateNetworkInfo();
-fetchNodeKeys();
 renderAccounts();
 connectBlockHeightWS();
 updateStats();

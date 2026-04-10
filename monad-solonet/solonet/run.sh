@@ -6,10 +6,10 @@ run_task() {
   source "$(dirname "${BASH_SOURCE[0]}")/tasks/$1"
 }
 
-/usr/bin/supervisord -c /solonet/config/supervisord.conf
-
 run_task ../lib/env.sh
 run_task ../lib/helpers.sh
+
+/usr/bin/supervisord -c /solonet/config/supervisord.conf
 
 run_task check-system.sh
 run_task upgrade-monad.sh
