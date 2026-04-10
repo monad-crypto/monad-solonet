@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.1](https://github.com/monad-crypto/monad-solonet/compare/v0.2.0...v0.2.1) (2026-04-10)
+
+
+### Bug Fixes
+
+* apply security feedback ([5057dd8](https://github.com/monad-crypto/monad-solonet/commit/5057dd8c8d84bb7fe29991b292087d42be69760f))
+
 ## [0.2.0](https://github.com/monad-crypto/monad-solonet/compare/v0.1.0...v0.2.0) (2026-04-10)
 
 
