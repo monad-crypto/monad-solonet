@@ -29,7 +29,7 @@ start_service monad-ledger-tail
 start_service sync-forkpoint-files
 
 log "Services"
-supervisorctl status
+supervisorctl status || true
 
 run_task register-validator.sh
 run_task print-info.sh

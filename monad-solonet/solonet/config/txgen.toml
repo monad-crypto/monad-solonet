@@ -1,0 +1,20 @@
+root_private_keys = [
+  "5de4111afa1a4b94908f83103eb1f1706367c2e68ca870fc3fb9a804cdab365a",
+]
+
+chain_id = 20143
+rpc_urls = ["http://localhost:8080"]
+refresh_delay_secs = 1
+
+[[workload_groups]]
+name = "default"
+
+[[workload_groups.traffic_gens]]
+tps = 10000
+sender_seed = 1
+senders = 1
+recipient_seed = 1
+recipients = 1
+sender_group_size = 3
+tx_per_sender = 1
+gen_mode.random_priority_fee = { tx_type = "native", contract_count = 1 }
