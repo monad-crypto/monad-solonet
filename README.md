@@ -68,6 +68,28 @@ Runtime notes:
 
 _Disclaimer: This project is intended for **development and testing purposes only**. **Do not use in production**._
 
+## Solonet versus other tools
+
+Category            | Solonet                     | Public Full node ([docs](https://docs.monad.xyz/node-ops/full-node-installation))
+--------------------|-----------------------------|-----------------------------
+Concept             | Spin up a NETWORK           | Spin up a NODE
+Purpose             | Local isolated network      | Join mainnet/testnet
+Topology            | n validators, m fullnodes   | Single node
+Use case            | Functional testing, dev     | Production-like usage
+State               | New chain, from genesis     | Existing network, real chain state
+Network type        | devnet                      | mainnet/testnet
+Control             | Full control                | Limited (network rules)
+Tokens              | Unlimited                   | Limited (MON, faucet)
+Protocol version    | monad_dev (latest features) | Current MONAD_REVISION/EVM_REVISION
+Perf realism        | ❌ Not realistic            | ✅ Realistic
+Storage             | Loopback (TrieDB)           | Real disk
+CPU                 | Throttled, no pinning       | No artificial limits
+Binary              | Dev/custom setup            | Official/supported binaries
+Env                 | Docker                      | Host
+Setup style         | Flexible, dev-focused       | Follows official docs
+Best machine        | Linux bare metal            | Linux bare metal
+VM support          | ✅ Yes                      | ✅ Partially
+macOS ARM           | ✅ QEMU VM                  | ❌ Not supported
 
 ## Run Monad Solonet networks
 
