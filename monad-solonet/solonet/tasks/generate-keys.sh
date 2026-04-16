@@ -40,6 +40,11 @@ TMP_PEER_FILE="$(mktemp)"
 cat >"$TMP_PEER_FILE" <<EOF
 node_name: $NODE_NAME
 node_type: $NODE_TYPE
+profile: $PROFILE_NAME
+profile_kind: $PROFILE_KIND
+stake_weight: $STAKE_WEIGHT
+register_amount: $STAKING_REGISTER_AMOUNT
+delegate_amount: $STAKING_DELEGATE_AMOUNT
 address: $CONTAINER_IP_ADDRESS:8000
 auth_port: 8001
 self_record_seq_num: 0
