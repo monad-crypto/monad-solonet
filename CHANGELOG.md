@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.3.0](https://github.com/monad-crypto/monad-solonet/compare/v0.2.1...v0.3.0) (2026-04-16)
+
+
+### Features
+
+* add blockscout explorer addon ([bb631dc](https://github.com/monad-crypto/monad-solonet/commit/bb631dc86267f16a2978868cb22251a5e2a18c20))
+* add blockscout explorer addon ([03c602a](https://github.com/monad-crypto/monad-solonet/commit/03c602a4556c5b2476652b4d5b05f2b5447fcf86))
+* add transaction generator ([#9](https://github.com/monad-crypto/monad-solonet/issues/9)) ([e5b9ed7](https://github.com/monad-crypto/monad-solonet/commit/e5b9ed7e7823fecc24a60de56851459484d0b698))
+
 ## [0.2.1](https://github.com/monad-crypto/monad-solonet/compare/v0.2.0...v0.2.1) (2026-04-10)
 
 
