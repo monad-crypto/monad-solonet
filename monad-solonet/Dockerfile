@@ -1,6 +1,5 @@
-FROM ubuntu:noble
+FROM ubuntu:noble AS solonet
 
-ARG MONAD_VERSION=0.14.1
 ARG OTEL_VERSION=0.139.0
 ARG SOLONET_VERSION=dev
 
@@ -50,17 +49,14 @@ RUN curl -fsSL -o /tmp/otelcol_linux_amd64.deb \
     "https://github.com/open-telemetry/opentelemetry-collector-releases/releases/download/v${OTEL_VERSION}/otelcol_${OTEL_VERSION}_linux_amd64.deb" \
     && dpkg -i /tmp/otelcol_linux_amd64.deb
 
-# Install monad client
+# Install Category Labs APT sources
 COPY solonet/config/category-labs.sources /etc/apt/sources.list.d/category-labs.sources
-RUN apt-get install -y supervisor
 RUN curl -fsSL https://pkg.category.xyz/keys/public-key.asc \
-    | gpg --dearmor --yes -o /etc/apt/keyrings/category-labs.gpg \
-    && apt-get update && apt-get install -y monad=${MONAD_VERSION} \
-    && rm -rf /var/lib/apt/lists/*
+    | gpg --dearmor --yes -o /etc/apt/keyrings/category-labs.gpg
 
 # Install gotemplate
 RUN curl -L -o /usr/local/bin/gomplate \
-    https://github.com/hairyhenderson/gomplate/releases/latest/download/gomplate_linux-amd64 \ 
+    https://github.com/hairyhenderson/gomplate/releases/latest/download/gomplate_linux-amd64 \
     && chmod +x /usr/local/bin/gomplate
 
 # Setup dashboard
@@ -74,3 +70,70 @@ COPY solonet/   /solonet/
 COPY bin/       /usr/local/bin/
 ENTRYPOINT ["/usr/bin/tini"]
 CMD ["/solonet/run.sh"]
+
+###################################################################
+FROM monad-builder AS builder-remote
+
+ARG MONAD_REPO_URL="https://github.com/category-labs/monad-bft.git"
+ARG MONAD_REPO_TARGET="master"
+
+RUN echo 'deb [trusted=yes] https://repo.goreleaser.com/apt/ /' > /etc/apt/sources.list.d/goreleaser.list \
+    && apt-get update \
+    && apt-get install -y nfpm binutils rsync \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY source/build-monad.sh /usr/local/bin/
+COPY source/package-monad.sh /usr/local/bin/
+COPY nfpm.yml /app/nfpm.yml
+
+WORKDIR /app/monad-bft/
+RUN --mount=type=cache,id=cargo-registry,target=/usr/local/cargo/registry \
+    --mount=type=cache,id=cargo-git,target=/usr/local/cargo/git \
+    git init && \
+    git remote add origin ${MONAD_REPO_URL} && \
+    git fetch --depth 1 origin ${MONAD_REPO_TARGET} && \
+    git checkout FETCH_HEAD && \
+    git submodule update --init --depth 1 --recursive && \
+    build-monad.sh && package-monad.sh
+
+###################################################################
+FROM monad-builder AS builder-local
+
+ARG MONAD_LOCAL_SOURCE="./source/monad-bft"
+
+RUN echo 'deb [trusted=yes] https://repo.goreleaser.com/apt/ /' > /etc/apt/sources.list.d/goreleaser.list \
+    && apt-get update \
+    && apt-get install -y nfpm binutils rsync \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY source/build-monad.sh /usr/local/bin/
+COPY source/package-monad.sh /usr/local/bin/
+COPY nfpm.yml /app/nfpm.yml
+
+COPY ${MONAD_LOCAL_SOURCE} /app/monad-bft/
+WORKDIR /app/monad-bft/
+RUN --mount=type=cache,id=cargo-registry,target=/usr/local/cargo/registry \
+    --mount=type=cache,id=cargo-git,target=/usr/local/cargo/git \
+    git submodule update --init --recursive --depth 1 && \
+    build-monad.sh && package-monad.sh
+
+###################################################################
+FROM solonet AS install-remote
+COPY --from=builder-remote /app/package/monad_0.0.0_amd64.deb /app/package/monad_0.0.0_amd64.deb
+RUN apt-get update \
+    && apt-get install -y /app/package/monad_0.0.0_amd64.deb \
+    && rm -rf /var/lib/apt/lists/*
+###################################################################
+FROM solonet AS install-local
+COPY --from=builder-local /app/package/monad_0.0.0_amd64.deb /app/package/monad_0.0.0_amd64.deb
+RUN apt-get update \
+    && apt-get install -y /app/package/monad_0.0.0_amd64.deb \
+    && rm -rf /var/lib/apt/lists/*
+###################################################################
+FROM solonet AS install-apt
+ARG MONAD_VERSION=0.14.1
+RUN apt-get update \
+    && apt-get install -y monad=${MONAD_VERSION} \
+    && rm -rf /var/lib/apt/lists/*
+###################################################################
+FROM install-deb AS default

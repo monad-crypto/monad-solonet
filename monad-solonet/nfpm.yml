@@ -1,0 +1,51 @@
+---
+# nFPM configuration for Monad DEB package
+
+name: monad
+description: Monad Stack
+arch: amd64
+platform: linux
+version: $DEB_VERSION
+version_schema: none
+maintainer: Monad Solonet <solonet@monad.xyz>
+vendor: Monad Solonet
+homepage: https://www.monad.xyz/
+license: MIT
+
+depends:
+  - libboost-context1.83.0
+  - libboost-fiber1.83.0
+  - libboost-fiber1.83-dev
+  - libboost-stacktrace1.83.0
+  - libtbb12
+  - liburing2
+  - libarchive-dev
+  - libbrotli-dev
+  - libcrypto++-dev
+  - libhugetlbfs-dev
+  - libhugetlbfs-bin
+  - libmagicenum-dev
+  - whiptail
+
+contents:
+  - src: package/usr/local/bin/
+    dst: /usr/local/bin/
+    type: tree
+  - src: package/usr/local/lib/
+    dst: /usr/local/lib/
+    type: tree
+  - src: package/etc/
+    dst: /etc/
+    type: tree
+  - src: package/opt/
+    dst: /opt/
+    type: tree
+  - src: package/usr/lib/systemd/system/
+    dst: /usr/lib/systemd/system/
+    type: tree
+
+scripts:
+  preinstall: package/DEBIAN/preinst
+  postinstall: package/DEBIAN/postinst
+  preremove: package/DEBIAN/prerm
+  postremove: package/DEBIAN/postrm

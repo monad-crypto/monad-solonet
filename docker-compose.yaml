@@ -1,10 +1,30 @@
 services:
   solonet:
     container_name: solonet
-    build: ./monad-solonet
     network_mode: host
     privileged: true
     ulimits:
       nofile:
         soft: 16384
         hard: 16384
+    build:
+      context: monad-solonet
+
+      # # Build and run Solonet using Monad official APT package (default)
+      # target: install-apt
+      # args:
+      #   MONAD_VERSION: 0.14.2
+
+      # # Build and run Solonet using Monad remote source
+      # target: install-remote
+      # args:
+      #   MONAD_REPO_URL: "https://github.com/category-labs/monad-bft.git"
+      #   # branch, tag, commit hash (long-form)
+      #   # MONAD_REPO_TARGET: "master"
+      #   MONAD_REPO_TARGET: "v0.14.2"
+      #   # MONAD_REPO_TARGET: "6307011c2acaf1349f2b6dbf488d2bb9e2844d2e"
+
+      # # Build and run Solonet using Monad local source
+      # target: install-local
+      # args:
+      #   MONAD_LOCAL_SOURCE: source/monad-bft/
