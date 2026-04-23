@@ -21,7 +21,7 @@ cd monad-solonet/source/
 make monad-builder
 ```
 
-By default this fetches the builder Dockerfile tagged at `v0.14.1`. To use a different ref:
+By default this fetches the builder Dockerfile tagged at `v0.14.2`. To use a different ref:
 
 ```sh
 make monad-builder MONAD_BUILDER_REF=v0.14.2

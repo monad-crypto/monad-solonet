@@ -131,7 +131,7 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 ###################################################################
 FROM solonet AS install-apt
-ARG MONAD_VERSION=0.14.1
+ARG MONAD_VERSION=0.14.2
 RUN apt-get update \
     && apt-get install -y monad=${MONAD_VERSION} \
     && rm -rf /var/lib/apt/lists/*
