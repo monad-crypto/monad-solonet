@@ -179,6 +179,7 @@ def validate_scenario(data: dict[str, Any], path: Path) -> None:
             raise ScenarioError(
                 f"{path}: node {node_id} has invalid stake_weight '{stake_weight}'"
             )
+        node["stake_weight"] = stake_weight
 
 
 def ensure_parent_dir(path: Path) -> None:
@@ -345,9 +346,9 @@ def check_ports_free(compose_path: Path) -> None:
         raise ScenarioError(f"ports already in use: {', '.join(str(p) for p in busy_ports)}")
 
 
-def count_available_loop_devices(start_id: int, total_nodes: int) -> None:
+def count_available_loop_devices(start_id: int, node_ids: list[int]) -> None:
     missing = []
-    for node_id in range(1, total_nodes + 1):
+    for node_id in node_ids:
         loop_path = Path(f"/dev/loop{start_id + node_id}")
         if not loop_path.exists():
             missing.append(str(loop_path))
@@ -360,7 +361,7 @@ def preflight(scenario_path: Path, compose_path: Path) -> None:
     check_ports_free(compose_path)
     count_available_loop_devices(
         int(scenario.get("device_id_start", DEFAULT_DEVICE_ID_START)),
-        len(scenario["nodes"]),
+        [node["id"] for node in scenario["nodes"]],
     )
 
     for profile_name, profile in scenario["profiles"].items():
@@ -421,6 +422,11 @@ def write_scenario_template(
         if count <= 0 or weight <= 0:
             raise ScenarioError(
                 f"invalid --custom-profile '{spec}', COUNT and TOTAL_WEIGHT must be positive"
+            )
+        if weight < count:
+            raise ScenarioError(
+                f"invalid --custom-profile '{spec}', TOTAL_WEIGHT ({weight}) "
+                f"must be >= COUNT ({count}) so every node gets a positive stake_weight"
             )
         groups.append((profile_name, count, weight))
         assigned_nodes += count

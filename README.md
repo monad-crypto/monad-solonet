@@ -154,8 +154,8 @@ Requirements:
 
 1. Clone the repository
 ```sh
-git clone git@github.com:aviggiano/monad-solonet.git ~/monad-solonet
-cd ~/monad-solonet
+git clone https://github.com/monad-developers/monad-docker-solonet.git
+cd monad-docker-solonet
 ```
 
 2. Start the network
@@ -184,10 +184,6 @@ Start a three-validator network with two custom profiles sourced from older loca
 ```sh
 ./scripts/scenario up scenarios/examples/3v-two-custom-old-revisions.toml
 ```
-
-For PR review, there is also a checked-in compose example at
-`networks/3v-two-custom-old-revisions.yaml` that shows the rendered result for
-that scenario.
 
 ### Reset and teardown
 

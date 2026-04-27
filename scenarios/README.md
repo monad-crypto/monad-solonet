@@ -18,10 +18,6 @@ Use them through `scripts/scenario`:
 
 The generated compose files are written under `generated/<scenario>/docker-compose.yaml`.
 
-For review and documentation purposes, the repo can also carry checked-in
-compose examples. See `networks/3v-two-custom-old-revisions.yaml` for the
-rendered form of the old-revision mixed-profile scenario.
-
 ## Profile Model
 
 - `default` profiles use the binaries baked into the image
