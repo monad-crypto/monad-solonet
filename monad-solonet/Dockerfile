@@ -74,27 +74,23 @@ CMD ["/solonet/run.sh"]
 ###################################################################
 FROM monad-builder AS builder-remote
 
-ARG MONAD_REPO_URL="https://github.com/category-labs/monad-bft.git"
-ARG MONAD_REPO_TARGET="master"
+ARG MONAD_BFT_REPO_URL="https://github.com/category-labs/monad-bft.git"
+ARG MONAD_BFT_REPO_TARGET="master"
+ARG MONAD_EXECUTION_REPO_URL
+ARG MONAD_EXECUTION_REPO_TARGET
 
 RUN echo 'deb [trusted=yes] https://repo.goreleaser.com/apt/ /' > /etc/apt/sources.list.d/goreleaser.list \
     && apt-get update \
-    && apt-get install -y nfpm binutils rsync \
+    && apt-get install -y nfpm binutils \
     && rm -rf /var/lib/apt/lists/*
 
-COPY source/build-monad.sh /usr/local/bin/
-COPY source/package-monad.sh /usr/local/bin/
-COPY nfpm.yml /app/nfpm.yml
+COPY source/*.sh /usr/local/bin/
+COPY source/nfpm.yml /app/nfpm.yml
 
 WORKDIR /app/monad-bft/
 RUN --mount=type=cache,id=cargo-registry,target=/usr/local/cargo/registry \
     --mount=type=cache,id=cargo-git,target=/usr/local/cargo/git \
-    git init && \
-    git remote add origin ${MONAD_REPO_URL} && \
-    git fetch --depth 1 origin ${MONAD_REPO_TARGET} && \
-    git checkout FETCH_HEAD && \
-    git submodule update --init --depth 1 --recursive && \
-    build-monad.sh && package-monad.sh
+    clone-monad.sh && build-monad.sh && package-monad.sh
 
 ###################################################################
 FROM monad-builder AS builder-local
@@ -103,14 +99,13 @@ ARG MONAD_LOCAL_SOURCE="./source/monad-bft"
 
 RUN echo 'deb [trusted=yes] https://repo.goreleaser.com/apt/ /' > /etc/apt/sources.list.d/goreleaser.list \
     && apt-get update \
-    && apt-get install -y nfpm binutils rsync \
+    && apt-get install -y nfpm binutils \
     && rm -rf /var/lib/apt/lists/*
 
-COPY source/build-monad.sh /usr/local/bin/
-COPY source/package-monad.sh /usr/local/bin/
-COPY nfpm.yml /app/nfpm.yml
-
+COPY source/*.sh /usr/local/bin/
+COPY source/nfpm.yml /app/nfpm.yml
 COPY ${MONAD_LOCAL_SOURCE} /app/monad-bft/
+
 WORKDIR /app/monad-bft/
 RUN --mount=type=cache,id=cargo-registry,target=/usr/local/cargo/registry \
     --mount=type=cache,id=cargo-git,target=/usr/local/cargo/git \
@@ -136,4 +131,4 @@ RUN apt-get update \
     && apt-get install -y monad=${MONAD_VERSION} \
     && rm -rf /var/lib/apt/lists/*
 ###################################################################
-FROM install-deb AS default
+FROM install-apt AS default

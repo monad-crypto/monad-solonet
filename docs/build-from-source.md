@@ -60,8 +60,8 @@ build:
   context: monad-solonet
   target: install-remote
   args:
-    MONAD_REPO_URL: "https://github.com/category-labs/monad-bft.git"
-    MONAD_REPO_TARGET: "v0.14.2"   # branch, tag, or full commit hash
+    MONAD_BFT_REPO_URL: "https://github.com/category-labs/monad-bft.git"
+    MONAD_BFT_REPO_TARGET: "v0.14.2"   # branch, tag, or full commit hash
 ```
 
 Then start Solonet:
@@ -93,7 +93,7 @@ make clone-monad-bft MONAD_BFT_REF=v0.14.2
 
 ### 2. Configure docker-compose.yaml
 
-The `install-local` target is already active in `docker-compose.yaml` by default:
+Uncomment the `install-local` block in `docker-compose.yaml`:
 
 ```yaml
 build:
