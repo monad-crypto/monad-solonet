@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.0](https://github.com/monad-crypto/monad-solonet/compare/v0.3.0...v0.4.0) (2026-04-28)
+
+
+### Features
+
+* support building monad from source ([#10](https://github.com/monad-crypto/monad-solonet/issues/10)) ([d86f8cf](https://github.com/monad-crypto/monad-solonet/commit/d86f8cf1346fce21e5fa0ff90bf10403f8c8bc56))
+
 ## [0.3.0](https://github.com/monad-crypto/monad-solonet/compare/v0.2.1...v0.3.0) (2026-04-16)
 
 
