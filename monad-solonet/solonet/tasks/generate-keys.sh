@@ -28,6 +28,7 @@ sig_out=$(
   monad-sign-name-record \
     --address "$CONTAINER_IP_ADDRESS:8000" \
     --authenticated-udp-port 8001 \
+    --direct-udp-port 8002 \
     --keystore-path "/shared/keys/$NODE_ID/id-secp" \
     --password "${KEYSTORE_PASSWORD}" \
     --self-record-seq-num 0
@@ -42,6 +43,7 @@ node_name: $NODE_NAME
 node_type: $NODE_TYPE
 address: $CONTAINER_IP_ADDRESS:8000
 auth_port: 8001
+direct_udp_port: 8002
 self_record_seq_num: 0
 self_name_record_sig: $SELF_NAME_RECORD_SIG
 secp256k1:
