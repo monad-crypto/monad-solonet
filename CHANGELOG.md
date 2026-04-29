@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.0](https://github.com/monad-crypto/monad-solonet/compare/v0.4.0...v0.5.0) (2026-04-29)
+
+
+### Features
+
+* implement Direct UDP connections ([#14](https://github.com/monad-crypto/monad-solonet/issues/14)) ([786cd48](https://github.com/monad-crypto/monad-solonet/commit/786cd48f8bf6b6a8e187e512b5dd4ee05c177564))
+
 ## [0.4.0](https://github.com/monad-crypto/monad-solonet/compare/v0.3.0...v0.4.0) (2026-04-28)
 
 
