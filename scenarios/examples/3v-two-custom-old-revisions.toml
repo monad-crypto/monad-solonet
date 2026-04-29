@@ -1,0 +1,37 @@
+name = "3v-two-custom-old-revisions"
+subnet = "172.21.60.0/24"
+port_base = 50080
+device_id_start = 30
+stake_unit = 100000
+
+[profiles.default]
+profile_kind = "default"
+binary_origin = "image"
+
+[profiles.custom_old_bft]
+profile_kind = "custom"
+binary_origin = "local"
+monad_node = "/home/ubuntu/monad-bft/.worktrees/custom_old_bft/target/release/monad-node"
+
+[profiles.custom_old_exec]
+profile_kind = "custom"
+binary_origin = "local"
+monad = "/home/ubuntu/monad/.worktrees/custom_old_exec/build/cmd/monad"
+
+[[nodes]]
+id = 1
+node_type = "validator"
+profile = "custom_old_bft"
+stake_weight = 1
+
+[[nodes]]
+id = 2
+node_type = "validator"
+profile = "custom_old_exec"
+stake_weight = 1
+
+[[nodes]]
+id = 3
+node_type = "validator"
+profile = "default"
+stake_weight = 1

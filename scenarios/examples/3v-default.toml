@@ -1,0 +1,27 @@
+name = "3v-default"
+subnet = "172.21.10.0/24"
+port_base = 48080
+device_id_start = 40
+stake_unit = 100000
+
+[profiles.default]
+profile_kind = "default"
+binary_origin = "image"
+
+[[nodes]]
+id = 1
+node_type = "validator"
+profile = "default"
+stake_weight = 1
+
+[[nodes]]
+id = 2
+node_type = "validator"
+profile = "default"
+stake_weight = 1
+
+[[nodes]]
+id = 3
+node_type = "validator"
+profile = "default"
+stake_weight = 1
