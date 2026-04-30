@@ -1,0 +1,55 @@
+name = "5v-mixed-custom"
+subnet = "172.21.40.0/24"
+port_base = 49080
+device_id_start = 50
+stake_unit = 100000
+
+[profiles.default]
+profile_kind = "default"
+binary_origin = "image"
+
+[profiles.custom_preload]
+profile_kind = "custom"
+binary_origin = "local"
+monad_node = "/home/ubuntu/monad-bft/.worktrees/preload-tuning/target/release/monad-node"
+
+[profiles.custom_preload.env]
+MONAD_BFT_PRELOAD_TUNING = "1"
+
+[profiles.custom_exec_cache]
+profile_kind = "custom"
+binary_origin = "local"
+monad = "/home/ubuntu/monad/.worktrees/exec-cache/build/cmd/monad"
+
+[profiles.custom_exec_cache.env]
+MONAD_EXEC_CACHE_PROFILE = "aggressive"
+
+[[nodes]]
+id = 1
+node_type = "validator"
+profile = "custom_preload"
+stake_weight = 2
+
+[[nodes]]
+id = 2
+node_type = "validator"
+profile = "custom_exec_cache"
+stake_weight = 2
+
+[[nodes]]
+id = 3
+node_type = "validator"
+profile = "default"
+stake_weight = 1
+
+[[nodes]]
+id = 4
+node_type = "validator"
+profile = "default"
+stake_weight = 1
+
+[[nodes]]
+id = 5
+node_type = "validator"
+profile = "default"
+stake_weight = 1
