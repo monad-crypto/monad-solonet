@@ -1,10 +1,24 @@
 log "Prepare triedb device ($DEVICE_SIZE_GB GB)"
+
+# Create the disk file
 mkdir -p "$(dirname "$DEVICE_PATH")"
 fallocate -l "${DEVICE_SIZE_GB}G" "$DEVICE_PATH"
-losetup -d "$DEVICE" 2>/dev/null || true
-losetup "$DEVICE" "$DEVICE_PATH"
-losetup -l | grep "$DEVICE"
-ln -s "$DEVICE" /dev/triedb || true
+
+# Mount the disk file to next available loopback device
+DEVICE=$(losetup --find --show "$DEVICE_PATH")
+
+# Start a background process that holds a file descriptor
+# on the device to allow auto-clear only on container exit
+sleep infinity <>"$DEVICE" &
+
+# Mark the device for auto-clear when becoming unused
+losetup --detach "$DEVICE"
+
+# Print the device information
+losetup --list "$DEVICE"
+
+# Map the device to trieDB path
+ln -sfn "$DEVICE" /dev/triedb
 
 echo "Formating MPT disk (if required)"
 monad-mpt --create --storage /dev/triedb

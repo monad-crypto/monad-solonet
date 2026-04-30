@@ -65,6 +65,12 @@ COPY dashboard/ /dashboard/
 COPY dashboard/dashboard.conf /etc/nginx/conf.d/.
 RUN echo "window.SOLONET_VERSION='${SOLONET_VERSION}';" > /dashboard/web/version.js
 
+# Install monad package
+ARG MONAD_VERSION=0.14.2
+RUN apt-get update \
+    && apt-get install -y monad=${MONAD_VERSION} \
+    && rm -rf /var/lib/apt/lists/*
+
 # Setup solonet
 COPY solonet/   /solonet/
 COPY bin/       /usr/local/bin/
@@ -116,19 +122,15 @@ RUN --mount=type=cache,id=cargo-registry,target=/usr/local/cargo/registry \
 FROM solonet AS install-remote
 COPY --from=builder-remote /app/package/monad_0.0.0_amd64.deb /app/package/monad_0.0.0_amd64.deb
 RUN apt-get update \
-    && apt-get install -y /app/package/monad_0.0.0_amd64.deb \
+    && apt-get install --allow-downgrades -y /app/package/monad_0.0.0_amd64.deb \
     && rm -rf /var/lib/apt/lists/*
 ###################################################################
 FROM solonet AS install-local
 COPY --from=builder-local /app/package/monad_0.0.0_amd64.deb /app/package/monad_0.0.0_amd64.deb
 RUN apt-get update \
-    && apt-get install -y /app/package/monad_0.0.0_amd64.deb \
+    && apt-get install --allow-downgrades -y /app/package/monad_0.0.0_amd64.deb \
     && rm -rf /var/lib/apt/lists/*
 ###################################################################
 FROM solonet AS install-apt
-ARG MONAD_VERSION=0.14.2
-RUN apt-get update \
-    && apt-get install -y monad=${MONAD_VERSION} \
-    && rm -rf /var/lib/apt/lists/*
 ###################################################################
 FROM install-apt AS default
