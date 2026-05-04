@@ -1,0 +1,52 @@
+# Chain configuration override for devnet (chain_id 20143).
+#
+# This file is deserialized into the MonadChainConfig struct. Check the struct
+# definition for the exact fields, types, and semantics before editing:
+# https://github.com/category-labs/monad-bft/blob/master/monad-chain-config/src/lib.rs
+#
+# Field examples (may be outdated — always refer to MonadChainConfig for the authoritative list):
+#   chain_id              - Network identifier. Must be 20143 (devnet) for this override to apply.
+#   epoch_length          - Number of rounds per epoch.
+#   epoch_start_delay     - Number of rounds before the first epoch begins.
+#
+#   Protocol version activation rounds (round number at which each version activates):
+#   v_0_7_0_activation    - Activation round for consensus protocol v0.7.0.
+#   v_0_8_0_activation    - Activation round for consensus protocol v0.8.0.
+#   v_0_10_0_activation   - Activation round for consensus protocol v0.10.0.
+#   v_0_11_0_activation   - Activation round for consensus protocol v0.11.0.
+#
+#   Execution layer activation Unix timestamps (seconds since epoch):
+#   execution_v_one_activation  - Timestamp for execution layer v1.
+#   execution_v_two_activation  - Timestamp for execution layer v2.
+#   execution_v_four_activation - Timestamp for execution layer v4.
+#
+#   [staking_config]
+#   staking_activation    - Epoch number at which staking activates.
+#
+#   [staking_config.block_reward_v_one]
+#   block_reward_activation - Epoch number at which block rewards activate.
+#   block_reward_mon        - Block reward amount in MON.
+#
+# NOTE: The values below are an example only. Verify and adjust them for your
+# specific setup before enabling this override.
+
+# Activated by setting CHAIN_CONFIG_OVERRIDE_ENABLED=1 (any non-empty value).
+
+chain_id = 20143
+epoch_length = 150
+epoch_start_delay = 15
+
+v_0_7_0_activation = 0
+v_0_8_0_activation = 0
+v_0_10_0_activation = 0
+v_0_11_0_activation = 0
+
+execution_v_one_activation = 0
+execution_v_two_activation = 0
+execution_v_four_activation = 0
+
+[staking_config]
+staking_activation = 2
+[staking_config.block_reward_v_one]
+block_reward_activation = 3
+block_reward_mon = 1
