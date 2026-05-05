@@ -9,6 +9,7 @@ export CONTAINER_IP_ADDRESS=$(hostname -i 2>/dev/null | awk '{ if (NF==1) print 
 export KEYS_PATH="/shared/keys/"
 export NODE_TYPE="${NODE_TYPE:-validator}" # values: validator, dedicated, public
 export MONAD_VERSION_OVERRIDE=${MONAD_VERSION_OVERRIDE:-}
+export CHAIN_CONFIG_OVERRIDE_ENABLED=${CHAIN_CONFIG_OVERRIDE_ENABLED:-}
 export PEERS_PATH="/shared/peers"
 export PEER_FILE="${PEERS_PATH}/${NODE_NAME}.yaml"
 export RUST_LOG=debug,h2=warn,tower=warn,opentelemetry_sdk=warn,opentelemetry-otlp=warn

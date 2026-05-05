@@ -5,7 +5,7 @@ start_service() {
     echo
   else
     echo "❌ $svc failed to start, showing logs:"
-    supervisorctl tail -100 "$svc"
+    supervisorctl tail "$svc"
     return 1
   fi
 }
