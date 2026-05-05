@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.5.0](https://github.com/monad-crypto/monad-solonet/compare/v0.4.0...v0.5.0) (2026-05-05)
+
+
+### Features
+
+* implement Direct UDP connections ([#14](https://github.com/monad-crypto/monad-solonet/issues/14)) ([786cd48](https://github.com/monad-crypto/monad-solonet/commit/786cd48f8bf6b6a8e187e512b5dd4ee05c177564))
+* implement loopback device auto-selection ([#17](https://github.com/monad-crypto/monad-solonet/issues/17)) ([57383ab](https://github.com/monad-crypto/monad-solonet/commit/57383ab2a4c4891ee4d5b9380a6617ee9574efd3))
+* support custom chain configuration ([#18](https://github.com/monad-crypto/monad-solonet/issues/18)) ([ec86918](https://github.com/monad-crypto/monad-solonet/commit/ec86918269c96b23060ea151e73453ea0ae1cda1))
+* upgrade to monad 0.14.3 ([#19](https://github.com/monad-crypto/monad-solonet/issues/19)) ([2aa561b](https://github.com/monad-crypto/monad-solonet/commit/2aa561b052b40d885462ee56aa45afcda091ad1e))
+
 ## [0.4.0](https://github.com/monad-crypto/monad-solonet/compare/v0.3.0...v0.4.0) (2026-04-28)
 
 
