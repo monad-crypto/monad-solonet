@@ -66,7 +66,7 @@ COPY dashboard/dashboard.conf /etc/nginx/conf.d/.
 RUN echo "window.SOLONET_VERSION='${SOLONET_VERSION}';" > /dashboard/web/version.js
 
 # Install monad package
-ARG MONAD_VERSION=0.14.2
+ARG MONAD_VERSION=0.14.3
 RUN apt-get update \
     && apt-get install -y monad=${MONAD_VERSION} \
     && rm -rf /var/lib/apt/lists/*
