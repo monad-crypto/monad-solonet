@@ -27,16 +27,3 @@ services:
       # target: install-local
       # args:
       #   MONAD_LOCAL_SOURCE: source/monad-bft/
-
-    # MONAD_NODE_EXTRA_CONFIG accepts a multi-line TOML snippet that is
-    # deep-merged into the generated node.toml at startup.  Values here
-    # override those produced by the node.toml template, making it easy
-    # to tune node parameters without rebuilding the image.
-    environment:
-      MONAD_NODE_EXTRA_CONFIG: |
-        # Lower the statesync trigger threshold for faster local dev cycles
-        statesync_threshold = 300
-
-        # Cap bandwidth to 100 Mbps to simulate a constrained network
-        [network]
-        max_mbps = 100

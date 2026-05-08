@@ -41,7 +41,7 @@ cat /home/monad/monad-bft/config/validators/validators.toml
 if [[ -n "${MONAD_NODE_EXTRA_CONFIG:-}" ]]; then
   log "Applying MONAD_NODE_EXTRA_CONFIG to node.toml"
   printf '%s\n' "${MONAD_NODE_EXTRA_CONFIG}" > /tmp/extra-node-config.toml
-  python3 /solonet/tasks/merge-toml.py \
+  python3 /solonet/lib/merge-toml.py \
     /home/monad/monad-bft/config/node.toml \
     /tmp/extra-node-config.toml
   log "node.toml after extra config merge:"

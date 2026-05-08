@@ -10,6 +10,10 @@ export KEYS_PATH="/shared/keys/"
 export NODE_TYPE="${NODE_TYPE:-validator}" # values: validator, dedicated, public
 export MONAD_VERSION_OVERRIDE=${MONAD_VERSION_OVERRIDE:-}
 export CHAIN_CONFIG_OVERRIDE_ENABLED=${CHAIN_CONFIG_OVERRIDE_ENABLED:-}
+# IKM secrets for deterministic key restore (both must be set to take effect).
+# When set, keys are imported via `monad-keystore import` instead of generated fresh.
+export SECP_IKM="${SECP_IKM:-}"
+export BLS_IKM="${BLS_IKM:-}"
 # Multi-line TOML snippet appended to (and merged into) the generated node.toml.
 # Values in this snippet override those produced by the node.toml template.
 # Example: MONAD_NODE_EXTRA_CONFIG=$'statesync_threshold = 300\n[network]\nmax_mbps = 100'
