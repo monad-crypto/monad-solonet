@@ -10,6 +10,10 @@ export KEYS_PATH="/shared/keys/"
 export NODE_TYPE="${NODE_TYPE:-validator}" # values: validator, dedicated, public
 export MONAD_VERSION_OVERRIDE=${MONAD_VERSION_OVERRIDE:-}
 export CHAIN_CONFIG_OVERRIDE_ENABLED=${CHAIN_CONFIG_OVERRIDE_ENABLED:-}
+# Multi-line TOML snippet appended to (and merged into) the generated node.toml.
+# Values in this snippet override those produced by the node.toml template.
+# Example: MONAD_NODE_EXTRA_CONFIG=$'statesync_threshold = 300\n[network]\nmax_mbps = 100'
+export MONAD_NODE_EXTRA_CONFIG="${MONAD_NODE_EXTRA_CONFIG:-}"
 export PEERS_PATH="/shared/peers"
 export PEER_FILE="${PEERS_PATH}/${NODE_NAME}.yaml"
 export RUST_LOG=debug,h2=warn,tower=warn,opentelemetry_sdk=warn,opentelemetry-otlp=warn
