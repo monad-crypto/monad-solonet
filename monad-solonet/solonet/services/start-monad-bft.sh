@@ -27,4 +27,4 @@ if [[ -n "${CHAIN_CONFIG_OVERRIDE_ENABLED:-}" ]]; then
   ARGS+=(--devnet-chain-config-override=/solonet/config/chain-config.toml)
 fi
 
-exec cpulimit --foreground -l 50 -- monad-node "${ARGS[@]}"
+exec cpulimit --foreground -l 50 -- /usr/local/bin/run-monad-node.sh "${ARGS[@]}"

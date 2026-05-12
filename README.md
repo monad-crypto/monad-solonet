@@ -51,6 +51,7 @@ docker run --rm -it \
 
 - Uses `monad` official package and binaries
 - Supports **single-validator**, **multi-validators**, and custom network setups
+- Supports scenario-driven networks with mixed `default` and `custom` validator profiles
 - Runs **natively on Linux** with Docker or on **macOS via an x86_64 Linux VM**
 - Uses the official [devnet](https://github.com/category-labs/monad/blob/main/category/execution/monad/chain/monad_devnet_alloc.hpp) genesis allocation configuration
 - Exposes RPC endpoint at http://localhost:8080
@@ -91,6 +92,58 @@ Best machine        | Linux bare metal            | Linux bare metal
 VM support          | ✅ Yes                      | ✅ Partially
 macOS ARM           | ✅ QEMU VM                  | ❌ Not supported
 
+## Scenario Workflow
+
+The recommended way to run mixed-profile validator sets is through `scripts/scenario`.
+
+Profiles are neutral and reusable:
+
+- `default`: use the binaries baked into the image
+- `custom`: mount one or more local binaries and optional env/config overrides
+
+You can define any number of named custom profiles in one scenario, for example:
+
+- `default`
+- `custom_preload`
+- `custom_exec_cache`
+
+Each node then references one profile and one `stake_weight`.
+
+Example paths use:
+
+- original execution tree: `/home/ubuntu/monad`
+- original bft tree: `/home/ubuntu/monad-bft`
+- execution binary output: `/home/ubuntu/monad/build/cmd/monad`
+- bft binary output: `/home/ubuntu/monad-bft/target/release/monad-node`
+- worktree convention:
+  - `/home/ubuntu/monad/.worktrees/BRANCH_NAME/build/cmd/monad`
+  - `/home/ubuntu/monad-bft/.worktrees/BRANCH_NAME/target/release/monad-node`
+
+Initialize a scaffold:
+
+```sh
+./scripts/scenario init \
+  --name 5v-mixed-custom \
+  --validators 5 \
+  --custom-profile custom_preload=1:2 \
+  --custom-profile custom_exec_cache=1:2
+```
+
+Render a compose file:
+
+```sh
+./scripts/scenario render scenarios/examples/5v-mixed-custom.toml
+```
+
+Start and stop the network:
+
+```sh
+./scripts/scenario up scenarios/examples/5v-mixed-custom.toml
+./scripts/scenario down scenarios/examples/5v-mixed-custom.toml
+```
+
+Rendered compose files are written under `generated/<scenario>/docker-compose.yaml`.
+
 ## Run Monad Solonet networks
 
 Requirements:
@@ -122,11 +175,26 @@ Start a full-components network:
 docker compose -f networks/full-network.yaml up --build
 ```
 
+Start a scenario-driven mixed-profile network:
+```sh
+./scripts/scenario up scenarios/examples/5v-mixed-custom.toml
+```
+
+Start a three-validator network with two custom profiles sourced from older local worktrees:
+```sh
+./scripts/scenario up scenarios/examples/3v-two-custom-old-revisions.toml
+```
+
 ### Reset and teardown
 
 Stop and remove containers, including volumes:
 ```sh
 docker compose -f NETWORK_FILE down --volumes
+```
+
+Stop a scenario-driven network:
+```sh
+./scripts/scenario down scenarios/examples/5v-mixed-custom.toml
 ```
 
 ## Prepare Docker Linux VM on macOS (Apple Silicon)

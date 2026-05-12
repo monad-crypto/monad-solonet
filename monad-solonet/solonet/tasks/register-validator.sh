@@ -14,27 +14,33 @@ else
     [ "$NODE_TYPE" = "validator" ] || continue
 
     VALIDATOR_NAME="$(basename "$PEER_FILE" .yaml)"
+    PROFILE_NAME="$(yq -r '.profile // "default"' "$PEER_FILE")"
+    REGISTER_AMOUNT="$(yq -r '.register_amount // empty' "$PEER_FILE")"
+    DELEGATE_AMOUNT="$(yq -r '.delegate_amount // empty' "$PEER_FILE")"
+    REGISTER_AMOUNT="${REGISTER_AMOUNT:-$STAKING_REGISTER_AMOUNT}"
+    DELEGATE_AMOUNT="${DELEGATE_AMOUNT:-$STAKING_DELEGATE_AMOUNT}"
     echo "Processing $VALIDATOR_NAME"
+    echo "Profile: $PROFILE_NAME"
 
     SECP="$(yq -r '.secp256k1.private_key' "$PEER_FILE")"
     BLS="$(yq -r '.bls.private_key' "$PEER_FILE")"
 
-    echo "Registering validator (amount: $STAKING_REGISTER_AMOUNT)"
+    echo "Registering validator (amount: $REGISTER_AMOUNT)"
     OUTPUT="$(
       yes y | staking-cli add-validator \
         --secp-privkey "$SECP" \
         --bls-privkey "$BLS" \
-        --amount "$STAKING_REGISTER_AMOUNT" \
+        --amount "$REGISTER_AMOUNT" \
         --auth-address "$STAKING_AUTH"
     )" || true
 
     echo "$OUTPUT"
 
-    echo "Delegating stake (amount: $STAKING_DELEGATE_AMOUNT)"
+    echo "Delegating stake (amount: $DELEGATE_AMOUNT)"
     VAL_STAKING_ID="$(echo "$OUTPUT" | grep -oE 'ID: [0-9]+' | awk '{print $2}')"
     staking-cli delegate \
       --validator-id "$VAL_STAKING_ID" \
-      --amount "$STAKING_DELEGATE_AMOUNT"
+      --amount "$DELEGATE_AMOUNT"
 
     echo
     staking-cli query validator --validator-id "$VAL_STAKING_ID"

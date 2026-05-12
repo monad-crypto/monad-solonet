@@ -3,8 +3,8 @@ if [[ "${NODE_ID:-1}" != "1" ]]; then
   return
 fi
 
-VERSION="$(monad-node --version 2>/dev/null | cut -d ' ' -f2 | jq -r .tag)"
-NODES="$(yq -r '"  \(.node_name): \(.secp256k1.public_key)"' /shared/peers/* | sort)"
+VERSION="$("${MONAD_NODE_BIN:-monad-node}" --version 2>/dev/null | cut -d ' ' -f2 | jq -r .tag)"
+NODES="$(yq -r '"  \(.node_name): type=\(.node_type) profile=\(.profile // "default") stake=\(.stake_weight // 1) secp=\(.secp256k1.public_key)"' /shared/peers/* | sort)"
 
 log "Initial delegation"
 echo "Available Accounts"
@@ -63,6 +63,7 @@ echo "Network type:        devnet"
 echo "Chain ID:            20143"
 echo "Monad revision:      MONAD_NEXT"
 echo "Node name:           $NODE_NAME"
+echo "Node profile:        $PROFILE_NAME ($PROFILE_KIND)"
 echo "Client version:      $VERSION"
 echo "BFT Logs:            /var/log/monad-bft.log"
 echo "Execution Logs:      /var/log/monad-execution.log"

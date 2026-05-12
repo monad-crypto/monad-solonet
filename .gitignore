@@ -1,1 +1,3 @@
 .claude/
+generated/
+__pycache__/
