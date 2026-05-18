@@ -1,6 +1,7 @@
 #!/bin/bash
 set -e
 
+MONAD_RPC_CUSTOM_BIN="${MONAD_RPC_CUSTOM_BIN:-monad-rpc}"
 export RUST_LOG="${RUST_LOG:-debug,h2=warn,tower=warn,opentelemetry_sdk=warn,opentelemetry-otlp=warn}"
 
 ARGS=(
@@ -15,4 +16,4 @@ ARGS=(
 )
 
 read -ra EXTRA_ARGS <<<"${MONAD_RPC_EXTRA_ARGS:-}"
-exec cpulimit --foreground -l 50 -- monad-rpc "${ARGS[@]}" "${EXTRA_ARGS[@]}"
+exec cpulimit --foreground -l 50 -- "$MONAD_RPC_CUSTOM_BIN" "${ARGS[@]}" "${EXTRA_ARGS[@]}"

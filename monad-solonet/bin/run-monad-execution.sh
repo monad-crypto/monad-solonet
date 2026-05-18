@@ -1,6 +1,8 @@
 #!/bin/bash
 set -e
 
+MONAD_EXECUTION_CUSTOM_BIN="${MONAD_EXECUTION_CUSTOM_BIN:-monad}"
+
 ARGS=(
   --chain=monad_devnet
   --db=/dev/triedb
@@ -12,4 +14,4 @@ ARGS=(
 )
 
 read -ra EXTRA_ARGS <<< "${MONAD_EXECUTION_EXTRA_ARGS:-}"
-exec cpulimit --foreground -l 50 -- monad "${ARGS[@]}" "${EXTRA_ARGS[@]}"
+exec cpulimit --foreground -l 50 -- "$MONAD_EXECUTION_CUSTOM_BIN" "${ARGS[@]}" "${EXTRA_ARGS[@]}"

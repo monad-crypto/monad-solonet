@@ -1,6 +1,7 @@
 #!/bin/bash
 set -e
 
+MONAD_BFT_CUSTOM_BIN="${MONAD_BFT_CUSTOM_BIN:-monad-node}"
 export RUST_LOG="${RUST_LOG:-debug,h2=warn,tower=warn,opentelemetry_sdk=warn,opentelemetry-otlp=warn}"
 export REMOTE_FORKPOINT_URL="${REMOTE_FORKPOINT_URL:-http://localhost:8082/shared/forkpoint.toml}"
 export REMOTE_VALIDATORS_URL="${REMOTE_VALIDATORS_URL:-http://localhost:8082/shared/validators.toml}"
@@ -28,4 +29,4 @@ if [[ -n "${CHAIN_CONFIG_OVERRIDE_ENABLED:-}" ]]; then
 fi
 
 read -ra EXTRA_ARGS <<< "${MONAD_BFT_EXTRA_ARGS:-}"
-exec cpulimit --foreground -l 50 -- monad-node "${ARGS[@]}" "${EXTRA_ARGS[@]}"
+exec cpulimit --foreground -l 50 -- "$MONAD_BFT_CUSTOM_BIN" "${ARGS[@]}" "${EXTRA_ARGS[@]}"

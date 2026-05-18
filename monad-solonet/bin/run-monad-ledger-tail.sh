@@ -1,6 +1,8 @@
 #!/bin/bash
 set -e
 
+MONAD_LEDGER_TAIL_CUSTOM_BIN="${MONAD_LEDGER_TAIL_CUSTOM_BIN:-monad-ledger-tail}"
+
 ARGS=(
   --ledger-path=/home/monad/monad-bft/ledger
   --forkpoint-path=/home/monad/monad-bft/config/forkpoint/forkpoint.toml
@@ -9,4 +11,4 @@ ARGS=(
 )
 
 read -ra EXTRA_ARGS <<< "${MONAD_LEDGER_TAIL_EXTRA_ARGS:-}"
-exec monad-ledger-tail "${ARGS[@]}" "${EXTRA_ARGS[@]}"
+exec "$MONAD_LEDGER_TAIL_CUSTOM_BIN" "${ARGS[@]}" "${EXTRA_ARGS[@]}"
