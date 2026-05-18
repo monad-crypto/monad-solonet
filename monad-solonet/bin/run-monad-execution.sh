@@ -11,4 +11,5 @@ ARGS=(
   --log_level=INFO
 )
 
-exec cpulimit --foreground -l 50 -- monad "${ARGS[@]}"
+read -ra EXTRA_ARGS <<< "${MONAD_EXECUTION_EXTRA_ARGS:-}"
+exec cpulimit --foreground -l 50 -- monad "${ARGS[@]}" "${EXTRA_ARGS[@]}"

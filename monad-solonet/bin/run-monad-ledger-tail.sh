@@ -8,4 +8,5 @@ ARGS=(
   --validators-path=/home/monad/monad-bft/config/validators/validators.toml
 )
 
-exec monad-ledger-tail "${ARGS[@]}"
+read -ra EXTRA_ARGS <<< "${MONAD_LEDGER_TAIL_EXTRA_ARGS:-}"
+exec monad-ledger-tail "${ARGS[@]}" "${EXTRA_ARGS[@]}"

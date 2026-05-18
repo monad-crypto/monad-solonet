@@ -14,4 +14,5 @@ ARGS=(
   --ws-enabled
 )
 
-exec cpulimit --foreground -l 50 -- monad-rpc "${ARGS[@]}"
+read -ra EXTRA_ARGS <<<"${MONAD_RPC_EXTRA_ARGS:-}"
+exec cpulimit --foreground -l 50 -- monad-rpc "${ARGS[@]}" "${EXTRA_ARGS[@]}"
