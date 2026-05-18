@@ -1,0 +1,5 @@
+name = "my-solonet"
+
+[[nodes]]
+id = 1
+node_type = "validator"

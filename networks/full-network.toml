@@ -1,0 +1,33 @@
+# solonetctl network configuration
+
+name = "full-network"
+subnet = "172.21.40.0/24"
+port_base = 49000
+stake_unit = 100000
+
+[profiles.default]
+profile_kind = "default"
+binary_origin = "image"
+
+[[nodes]]
+id = 1
+node_type = "validator"
+stake_weight = 2
+
+[[nodes]]
+id = 2
+node_type = "validator"
+stake_weight = 2
+
+[[nodes]]
+id = 3
+node_type = "validator"
+stake_weight = 1
+
+[[nodes]]
+id = 4
+node_type = "dedicated"
+
+[[nodes]]
+id = 5
+node_type = "public"
