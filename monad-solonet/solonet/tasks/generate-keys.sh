@@ -6,15 +6,40 @@ log "Generate keys"
 }
 
 mkdir -p "$KEYS_PATH/$NODE_ID"
-monad-keystore create \
-  --key-type secp \
-  --keystore-path "/shared/keys/$NODE_ID/id-secp" \
-  --password "${KEYSTORE_PASSWORD}" >/opt/monad/backup/secp-backup
+mkdir -p /opt/monad/backup
 
-monad-keystore create \
-  --key-type bls \
-  --keystore-path "/shared/keys/$NODE_ID/id-bls" \
-  --password "${KEYSTORE_PASSWORD}" >/opt/monad/backup/bls-backup
+if [[ -n "${SECP_IKM:-}" && -n "${BLS_IKM:-}" ]]; then
+  log "Restoring node identity from IKM secrets"
+
+  monad-keystore import \
+    --ikm "$SECP_IKM" \
+    --password "${KEYSTORE_PASSWORD}" \
+    --keystore-path "/shared/keys/$NODE_ID/id-secp" \
+    --key-type secp > /opt/monad/backup/secp-backup
+
+  monad-keystore import \
+    --ikm "$BLS_IKM" \
+    --password "${KEYSTORE_PASSWORD}" \
+    --keystore-path "/shared/keys/$NODE_ID/id-bls" \
+    --key-type bls > /opt/monad/backup/bls-backup
+
+elif [[ -z "${SECP_IKM:-}" && -z "${BLS_IKM:-}" ]]; then
+  log "Generating fresh node identity"
+
+  monad-keystore create \
+    --key-type secp \
+    --keystore-path "/shared/keys/$NODE_ID/id-secp" \
+    --password "${KEYSTORE_PASSWORD}" > /opt/monad/backup/secp-backup
+
+  monad-keystore create \
+    --key-type bls \
+    --keystore-path "/shared/keys/$NODE_ID/id-bls" \
+    --password "${KEYSTORE_PASSWORD}" > /opt/monad/backup/bls-backup
+
+else
+  echo "ERROR: SECP_IKM and BLS_IKM must both be set or both be unset." >&2
+  exit 1
+fi
 
 SECP_PUBKEY=$(grep "public key" /opt/monad/backup/secp-backup | cut -d " " -f4)
 SECP_PRIVKEY=$(grep "private key" /opt/monad/backup/secp-backup | cut -d " " -f4)
