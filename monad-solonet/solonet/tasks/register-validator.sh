@@ -18,6 +18,8 @@ else
 
     SECP="$(yq -r '.secp256k1.private_key' "$PEER_FILE")"
     BLS="$(yq -r '.bls.private_key' "$PEER_FILE")"
+    STAKING_REGISTER_AMOUNT="$(yq -r '.staking_register_amount' "$PEER_FILE")"
+    STAKING_DELEGATE_AMOUNT="$(yq -r '.staking_delegate_amount' "$PEER_FILE")"
 
     echo "Registering validator (amount: $STAKING_REGISTER_AMOUNT)"
     OUTPUT="$(

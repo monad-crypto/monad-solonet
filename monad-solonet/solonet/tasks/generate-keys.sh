@@ -67,6 +67,8 @@ cat >"$TMP_PEER_FILE" <<EOF
 node_name: $NODE_NAME
 node_type: $NODE_TYPE
 stake: $STAKE_WEIGHT
+staking_register_amount: $STAKING_REGISTER_AMOUNT
+staking_delegate_amount: $STAKING_DELEGATE_AMOUNT
 address: $CONTAINER_IP_ADDRESS:8000
 auth_port: 8001
 direct_udp_port: 8002
