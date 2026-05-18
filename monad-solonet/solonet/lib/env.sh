@@ -10,6 +10,8 @@ export KEYS_PATH="/shared/keys/"
 export NODE_TYPE="${NODE_TYPE:-validator}" # values: validator, dedicated, public
 export MONAD_VERSION_OVERRIDE=${MONAD_VERSION_OVERRIDE:-}
 export CHAIN_CONFIG_OVERRIDE_ENABLED=${CHAIN_CONFIG_OVERRIDE_ENABLED:-}
+export CHAIN_EPOCH_LENGTH="${CHAIN_EPOCH_LENGTH:-}"
+export CHAIN_EPOCH_START_DELAY="${CHAIN_EPOCH_START_DELAY:-}"
 # IKM secrets for deterministic key restore (both must be set to take effect).
 # When set, keys are imported via `monad-keystore import` instead of generated fresh.
 export SECP_IKM="${SECP_IKM:-}"

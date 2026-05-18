@@ -25,7 +25,7 @@ ARGS=(
 )
 
 if [[ -n "${CHAIN_CONFIG_OVERRIDE_ENABLED:-}" ]]; then
-  ARGS+=(--devnet-chain-config-override=/solonet/config/chain-config.toml)
+  ARGS+=(--devnet-chain-config-override=/home/monad/monad-bft/config/chain-config.toml)
 fi
 
 read -ra EXTRA_ARGS <<< "${MONAD_BFT_EXTRA_ARGS:-}"
