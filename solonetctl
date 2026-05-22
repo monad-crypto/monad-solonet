@@ -1,0 +1,437 @@
+#!/usr/bin/env python3
+
+from __future__ import annotations
+
+import argparse
+import ipaddress
+import re
+import shlex
+import subprocess
+import sys
+import tomllib
+from pathlib import Path
+from typing import Any
+
+ROOT = Path(__file__).resolve().parent
+SOLONET_BUILD_CONTEXT = ROOT / "monad-solonet"
+PORT_STRIDE = 100
+NODE_IP_OFFSET = 10
+DEFAULT_KEYSTORE_PASSWORD = "password"
+DEFAULT_STAKE_UNIT = 100_000
+DEFAULT_SUBNET = "172.21.0.0/24"
+DEFAULT_PORT_BASE = 48000
+
+SERVICE_OVERRIDE_TARGETS = {
+    "monad_bft": "/solonet/services/monad-bft.ini",
+    "monad_execution": "/solonet/services/monad-execution.ini",
+    "monad_rpc": "/solonet/services/monad-rpc.ini",
+}
+
+
+class NetworkError(RuntimeError):
+    pass
+
+
+# ── YAML serialization ────────────────────────────────────────────────────────
+
+
+def yaml_scalar(value: Any) -> str:
+    if isinstance(value, bool):
+        return "true" if value else "false"
+    if isinstance(value, int):
+        return str(value)
+    if value is None:
+        return "null"
+    text = str(value)
+    escaped = text.replace("\\", "\\\\").replace('"', '\\"')
+    return f'"{escaped}"'
+
+
+def dump_yaml(data: Any, indent: int = 0) -> str:
+    pad = " " * indent
+    if isinstance(data, dict):
+        lines: list[str] = []
+        for key, value in data.items():
+            if isinstance(value, (dict, list)):
+                lines.append(f"{pad}{key}:")
+                lines.append(dump_yaml(value, indent + 2))
+            else:
+                lines.append(f"{pad}{key}: {yaml_scalar(value)}")
+        return "\n".join(lines)
+    if isinstance(data, list):
+        lines = []
+        for item in data:
+            if isinstance(item, (dict, list)):
+                dumped = dump_yaml(item, indent + 2).splitlines()
+                if dumped:
+                    lines.append(f"{pad}- {dumped[0].lstrip()}")
+                    lines.extend(
+                        " " * (indent + 2) + line.lstrip() for line in dumped[1:]
+                    )
+                else:
+                    lines.append(f"{pad}-")
+            else:
+                lines.append(f"{pad}- {yaml_scalar(item)}")
+        return "\n".join(lines)
+    return f"{pad}{yaml_scalar(data)}"
+
+
+# ── Validation ────────────────────────────────────────────────────────────────
+
+
+def validate_network(data: dict[str, Any], path: Path) -> None:
+    if not isinstance(data, dict):
+        raise NetworkError(f"{path}: network must be a TOML table")
+
+    if "name" not in data:
+        raise NetworkError(f"{path}: missing required field 'name'")
+
+    if "nodes" not in data or not isinstance(data["nodes"], list) or not data["nodes"]:
+        raise NetworkError(f"{path}: 'nodes' must be a non-empty array")
+
+    profiles = data.setdefault("profiles", {})
+    if not isinstance(profiles, dict):
+        raise NetworkError(f"{path}: 'profiles' must be a table")
+    profiles.setdefault("default", {})
+
+    for profile_name, profile in profiles.items():
+        if not isinstance(profile, dict):
+            raise NetworkError(f"{path}: profile '{profile_name}' must be a table")
+
+        binary_origin = profile.get("binary_origin", "image")
+        if binary_origin not in ("image", "local"):
+            raise NetworkError(
+                f"{path}: profile '{profile_name}': invalid binary_origin '{binary_origin}'"
+            )
+        if binary_origin == "local" and not any(
+            profile.get(k) for k in ("monad_node", "monad", "monad_rpc")
+        ):
+            raise NetworkError(
+                f"{path}: profile '{profile_name}': binary_origin 'local' requires at least one of: monad_node, monad, monad_rpc"
+            )
+
+        if not isinstance(profile.get("env", {}), dict):
+            raise NetworkError(f"{path}: profile '{profile_name}'.env must be a table")
+        if not isinstance(profile.get("build_args", {}), dict):
+            raise NetworkError(f"{path}: profile '{profile_name}'.build_args must be a table")
+        if not isinstance(profile.get("service_overrides", {}), dict):
+            raise NetworkError(
+                f"{path}: profile '{profile_name}'.service_overrides must be a table"
+            )
+        if not isinstance(profile.get("mounts", []), list):
+            raise NetworkError(
+                f"{path}: profile '{profile_name}'.mounts must be an array"
+            )
+
+    seen_ids: set[int] = set()
+    for node in data["nodes"]:
+        if not isinstance(node, dict):
+            raise NetworkError(f"{path}: each node must be a table")
+
+        node_id = node.get("id")
+        if not isinstance(node_id, int) or node_id <= 0:
+            raise NetworkError(f"{path}: node id must be a positive integer")
+        if node_id in seen_ids:
+            raise NetworkError(f"{path}: duplicate node id {node_id}")
+        seen_ids.add(node_id)
+
+        node_type = node.get("node_type")
+        if node_type not in ("validator", "dedicated", "public"):
+            raise NetworkError(
+                f"{path}: node {node_id}: invalid node_type '{node_type}'"
+            )
+
+        node.setdefault("profile", "default")
+        node.setdefault("stake_weight", 1)
+
+        profile_name = node["profile"]
+        if profile_name not in profiles:
+            raise NetworkError(
+                f"{path}: node {node_id} references unknown profile '{profile_name}'"
+            )
+
+        stake_weight = node["stake_weight"]
+        if not isinstance(stake_weight, int) or stake_weight <= 0:
+            raise NetworkError(
+                f"{path}: node {node_id}: invalid stake_weight '{stake_weight}'"
+            )
+
+
+# ── Network loading ──────────────────────────────────────────────────────────
+
+DEFAULT_NETWORK: dict[str, Any] = {
+    "name": "solonet",
+    "profiles": {"default": {}},
+    "nodes": [
+        {"id": 1, "node_type": "validator", "profile": "default", "stake_weight": 1}
+    ],
+}
+
+
+def load_network(path: Path) -> dict[str, Any]:
+    if not path.exists():
+        return DEFAULT_NETWORK
+    with path.open("rb") as handle:
+        data = tomllib.load(handle)
+    validate_network(data, path)
+    return data
+
+
+# ── Compose generation ────────────────────────────────────────────────────────
+
+
+def resolve_binary_mount(profile_name: str, binary_name: str) -> str:
+    return f"/opt/solonet/custom/{profile_name}/{binary_name}"
+
+
+def build_compose(network_path: Path) -> str:
+    network = load_network(network_path)
+    subnet = ipaddress.ip_network(network.get("subnet", DEFAULT_SUBNET))
+    port_base = int(network.get("port_base", DEFAULT_PORT_BASE))
+    keystore_password = network.get("keystore_password", DEFAULT_KEYSTORE_PASSWORD)
+    stake_unit = int(network.get("stake_unit", DEFAULT_STAKE_UNIT))
+    build_context = (
+        str(Path(network["build_context"]).resolve())
+        if "build_context" in network
+        else str(SOLONET_BUILD_CONTEXT)
+    )
+
+    compose: dict[str, Any] = {
+        "volumes": {"shared-data": {}},
+        "networks": {
+            "solonet": {
+                "driver": "bridge",
+                "ipam": {"config": [{"subnet": str(subnet)}]},
+            }
+        },
+        "services": {
+            "init": {
+                "container_name": f"{network['name']}-init",
+                "build": build_context,
+                "command": ["setup-monad-sysctl.sh"],
+                "privileged": True,
+                "network_mode": "host",
+                "volumes": ["/:/host"],
+            }
+        },
+    }
+
+    total_nodes = len(network["nodes"])
+    for node in network["nodes"]:
+        node_id = node["id"]
+        profile_name = node["profile"]
+        profile = network["profiles"][profile_name]
+        binary_origin = profile.get("binary_origin", "image")
+
+        host_rpc_port = port_base + 80 + (node_id - 1) * PORT_STRIDE
+        container_ip = str(subnet.network_address + NODE_IP_OFFSET + node_id)
+        service_name = f"solonet-node-{node_id}"
+
+        env: dict[str, Any] = {
+            "KEYSTORE_PASSWORD": keystore_password,
+            "NODE_ID": node_id,
+            "NODE_TYPE": node["node_type"],
+            "TOTAL_NODE_NUMBER": total_nodes,
+            "PROFILE_NAME": profile_name,
+            "STAKE_WEIGHT": node["stake_weight"],
+            "STAKING_REGISTER_AMOUNT": stake_unit,
+            "STAKING_DELEGATE_AMOUNT": stake_unit * 100 * node["stake_weight"],
+        }
+
+        volumes = ["shared-data:/shared"]
+
+        if binary_origin == "local":
+            binary_map = {
+                "monad_node": ("monad-node", "MONAD_BFT_CUSTOM_BIN"),
+                "monad": ("monad", "MONAD_EXECUTION_CUSTOM_BIN"),
+                "monad_rpc": ("monad-rpc", "MONAD_RPC_CUSTOM_BIN"),
+            }
+            for profile_key, (binary_name, env_key) in binary_map.items():
+                source = profile.get(profile_key)
+                if not source:
+                    continue
+                mount_target = resolve_binary_mount(profile_name, binary_name)
+                volumes.append(f"{Path(source).resolve()}:{mount_target}:ro")
+                env[env_key] = mount_target
+
+        chain_override = profile.get("chain_override")
+        if chain_override:
+            target = f"/opt/solonet/custom/{profile_name}/chain-override.toml"
+            volumes.append(f"{Path(chain_override).resolve()}:{target}:ro")
+            extra = shlex.split(str(env.get("MONAD_BFT_EXTRA_ARGS", "")))
+            extra.append(f"--devnet-chain-config-override={target}")
+            env["MONAD_BFT_EXTRA_ARGS"] = " ".join(extra)
+
+        for service_key, target in SERVICE_OVERRIDE_TARGETS.items():
+            override_path = profile.get("service_overrides", {}).get(service_key)
+            if override_path:
+                volumes.append(f"{Path(override_path).resolve()}:{target}:ro")
+
+        for mount in profile.get("mounts", []):
+            source = Path(mount["source"]).resolve()
+            target = mount["target"]
+            mode = mount.get("mode", "ro")
+            volumes.append(f"{source}:{target}:{mode}")
+
+        for key, value in profile.get("env", {}).items():
+            env[key] = value
+
+        profile_build_context = (
+            str(Path(profile["build_context"]).resolve())
+            if "build_context" in profile
+            else build_context
+        )
+        build_args = profile.get("build_args", {})
+        build_field: Any = (
+            {"context": profile_build_context, "args": build_args}
+            if build_args
+            else profile_build_context
+        )
+
+        compose["services"][service_name] = {
+            "container_name": f"{network['name']}-{service_name}",
+            "build": build_field,
+            "depends_on": {"init": {"condition": "service_completed_successfully"}},
+            "networks": {"solonet": {"ipv4_address": container_ip}},
+            "privileged": True,
+            "ports": [
+                f"{host_rpc_port}:8080",
+                f"{host_rpc_port + 1}:8081",
+                f"{host_rpc_port + 2}:8082",
+            ],
+            "ulimits": {"nofile": {"soft": 16384, "hard": 16384}},
+            "volumes": volumes,
+            "environment": env,
+        }
+
+    return dump_yaml(compose) + "\n"
+
+
+# ── Preflight ─────────────────────────────────────────────────────────────────
+
+
+def run_command(cmd: list[str], input: str | None = None) -> None:
+    subprocess.run(cmd, input=input, text=True, check=True)
+
+
+def check_ports_free(compose_content: str) -> None:
+    used_ports: list[int] = []
+    port_pattern = re.compile(r'^\s*-\s*"?(?P<host>\d+):(8080|8081|8082)"?\s*$')
+    for line in compose_content.splitlines():
+        match = port_pattern.match(line)
+        if match:
+            used_ports.append(int(match.group("host")))
+
+    busy_ports = []
+    for port in used_ports:
+        try:
+            import socket
+
+            with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
+                sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+                if sock.connect_ex(("127.0.0.1", port)) == 0:
+                    busy_ports.append(port)
+        except OSError:
+            busy_ports.append(port)
+
+    if busy_ports:
+        raise NetworkError(
+            f"ports already in use: {', '.join(str(p) for p in busy_ports)}"
+        )
+
+
+def preflight(network_path: Path, compose_content: str) -> None:
+    network = load_network(network_path)
+    check_ports_free(compose_content)
+
+    for profile_name, profile in network["profiles"].items():
+        for key in ("monad_node", "monad", "monad_rpc", "chain_override"):
+            path = profile.get(key)
+            if path and not Path(path).exists():
+                raise NetworkError(
+                    f"profile '{profile_name}' references missing path for {key}: {path}"
+                )
+        for override_key, override_path in profile.get("service_overrides", {}).items():
+            if not Path(override_path).exists():
+                raise NetworkError(
+                    f"profile '{profile_name}' references missing service override for {override_key}: {override_path}"
+                )
+        for mount in profile.get("mounts", []):
+            if not Path(mount["source"]).exists():
+                raise NetworkError(
+                    f"profile '{profile_name}' references missing mount source: {mount['source']}"
+                )
+
+
+
+
+# ── Docker Compose helpers ────────────────────────────────────────────────────
+
+
+def docker_compose_base(project_name: str) -> list[str]:
+    return ["docker", "compose", "-f", "-", "-p", project_name]
+
+
+# ── Argument parsing & main ───────────────────────────────────────────────────
+
+
+def parse_args(argv: list[str]) -> tuple[Path, str, list[str]]:
+    parser = argparse.ArgumentParser(add_help=False)
+    parser.add_argument("-f", "--file", default="network.toml")
+    args, rest = parser.parse_known_args(argv)
+
+    if not rest:
+        print(
+            "usage: solonetctl [-f network.toml] <command> [args...]\n"
+            "\n"
+            "solonetctl is a wrapper around docker compose. it generates a compose file\n"
+            "from a network config and forwards all commands to docker compose.\n"
+            "\n"
+            "native commands:\n"
+            "  render    print the generated docker-compose.yaml to stdout\n"
+            "  up        run preflight checks, then docker compose up\n"
+            "\n"
+            "all other commands (down, logs, ps, exec, ...) are passed to docker compose.",
+            file=sys.stderr,
+        )
+        sys.exit(1)
+
+    network_path = Path(args.file).resolve()
+    if not network_path.exists():
+        print(f"error: network config file not found: {args.file}", file=sys.stderr)
+        sys.exit(1)
+
+    command = rest[0]
+    compose_args = rest[1:]
+    return network_path, command, compose_args
+
+
+def main(argv: list[str]) -> int:
+    network_path, command, compose_args = parse_args(argv)
+
+    try:
+        if command == "render":
+            print(build_compose(network_path), end="")
+            return 0
+
+        compose_content = build_compose(network_path)
+        project_name = load_network(network_path)["name"]
+
+        if command == "up":
+            preflight(network_path, compose_content)
+
+        run_command(
+            docker_compose_base(project_name) + [command] + compose_args,
+            input=compose_content,
+        )
+        return 0
+
+    except NetworkError as exc:
+        print(f"error: {exc}", file=sys.stderr)
+        return 1
+    except KeyboardInterrupt:
+        return 130
+
+
+if __name__ == "__main__":
+    sys.exit(main(sys.argv[1:]))

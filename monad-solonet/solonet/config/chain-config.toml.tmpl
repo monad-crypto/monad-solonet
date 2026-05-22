@@ -33,8 +33,8 @@
 # Activated by setting CHAIN_CONFIG_OVERRIDE_ENABLED=1 (any non-empty value).
 
 chain_id = 20143
-epoch_length = 150
-epoch_start_delay = 15
+epoch_length = {{ env.Getenv "CHAIN_EPOCH_LENGTH" "1000" }}
+epoch_start_delay = {{ env.Getenv "CHAIN_EPOCH_START_DELAY" "500" }}
 
 v_0_7_0_activation = 0
 v_0_8_0_activation = 0

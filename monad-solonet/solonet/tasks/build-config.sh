@@ -38,6 +38,14 @@ gomplate \
   -d peers=/shared/peers/
 cat /home/monad/monad-bft/config/validators/validators.toml
 
+if [[ -n "${CHAIN_CONFIG_OVERRIDE_ENABLED:-}" ]]; then
+  log "Building chain-config.toml configuration"
+  gomplate \
+    -f /solonet/config/chain-config.toml.tmpl \
+    -o /home/monad/monad-bft/config/chain-config.toml
+  cat /home/monad/monad-bft/config/chain-config.toml
+fi
+
 if [[ -n "${MONAD_NODE_EXTRA_CONFIG:-}" ]]; then
   log "Applying MONAD_NODE_EXTRA_CONFIG to node.toml"
   printf '%s\n' "${MONAD_NODE_EXTRA_CONFIG}" > /tmp/extra-node-config.toml
