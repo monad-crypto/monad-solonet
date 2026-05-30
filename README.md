@@ -68,6 +68,66 @@ Runtime notes:
 
 _Disclaimer: This project is intended for **development and testing purposes only**. **Do not use in production**._
 
+## Monitoring
+
+Solonet includes an optional monitoring stack based on Prometheus, Grafana and Node Exporter.
+
+Start monitoring:
+
+```sh
+cd addons/monitoring
+docker compose up -d
+```
+
+Available endpoints:
+
+| Service | URL |
+|----------|----------|
+| Grafana | http://localhost:13000 |
+| Prometheus | http://localhost:19090 |
+| Node Exporter | http://localhost:19100 |
+
+Default Grafana credentials:
+
+```text
+admin
+admin
+```
+
+The monitoring stack provides:
+
+- Monad consensus metrics
+- Execution metrics
+- RPC metrics
+- System CPU usage
+- Memory usage
+- Disk usage
+- Network traffic
+
+### Metrics Endpoint
+
+By default, the monitoring stack scrapes Solonet metrics from:
+
+```text
+host.docker.internal:48089
+```
+
+This corresponds to the default Solonet port mapping:
+
+```text
+48080 -> RPC
+48081 -> WebSocket RPC
+48082 -> Engine API
+48089 -> Metrics
+```
+
+> Note:
+> The default monitoring configuration assumes the compose-based Solonet setup.
+> If Solonet is started using the Quick Start command with `--network host`,
+> update the Prometheus target to use port `8889` instead.
+
+If you are using a custom `port_base` in `network.toml`, update the Prometheus target in `addons/monitoring/prometheus.yml` accordingly.
+
 ## Solonet versus other tools
 
 Category            | Solonet                     | Public Full node ([docs](https://docs.monad.xyz/node-ops/full-node-installation))

@@ -298,6 +298,7 @@ def build_compose(network_path: Path) -> str:
                 f"{host_rpc_port}:8080",
                 f"{host_rpc_port + 1}:8081",
                 f"{host_rpc_port + 2}:8082",
+                f"{host_rpc_port + 9}:8889",
             ],
             "ulimits": {"nofile": {"soft": 16384, "hard": 16384}},
             "volumes": volumes,
