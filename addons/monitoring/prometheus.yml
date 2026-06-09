@@ -18,6 +18,10 @@ scrape_configs:
           - "host.docker.internal:48289"
         labels:
           node: "node-3"
+      - targets:
+          - "host.docker.internal:8889"
+        labels:
+          node: "host-mode"
 
     relabel_configs:
       - source_labels: [node]
