@@ -104,29 +104,44 @@ The monitoring stack provides:
 - Disk usage
 - Network traffic
 
-### Metrics Endpoint
+### Metrics Endpoints
 
-By default, the monitoring stack scrapes Solonet metrics from:
+The default Prometheus configuration supports both deployment modes:
+
+#### Compose-based Solonet
 
 ```text
 host.docker.internal:48089
+host.docker.internal:48189
+host.docker.internal:48289
 ```
 
-This corresponds to the default Solonet port mapping:
+Default port mapping:
 
 ```text
 48080 -> RPC
 48081 -> WebSocket RPC
 48082 -> Engine API
-48089 -> Metrics
+48089 -> Metrics (node-1)
+48189 -> Metrics (node-2)
+48289 -> Metrics (node-3)
 ```
 
-> Note:
-> The default monitoring configuration assumes the compose-based Solonet setup.
-> If Solonet is started using the Quick Start command with `--network host`,
-> update the Prometheus target to use port `8889` instead.
+#### Host network mode
 
-If you are using a custom `port_base` in `network.toml`, update the Prometheus target in `addons/monitoring/prometheus.yml` accordingly.
+When Solonet is started using the Quick Start command with:
+
+```text
+--network host
+```
+
+metrics are exposed on:
+
+```text
+host.docker.internal:8889
+```
+
+If you are using a custom `port_base` in `network.toml`, update the Prometheus targets in `addons/monitoring/prometheus.yml` accordingly.
 
 ## Solonet versus other tools
 
