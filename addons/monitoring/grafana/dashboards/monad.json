@@ -2381,7 +2381,7 @@
                         "uid": "Prometheus"
                     },
                     "editorMode": "code",
-                    "expr": "rate(monad_execution_ledger_num_commits{job=~\"${net}.*\"}[60s])",
+                    "expr": "rate(monad_execution_ledger_num_commits[60s])",
                     "instant": false,
                     "legendFormat": "{{instance}}",
                     "range": true,
@@ -2481,7 +2481,7 @@
                         "uid": "Prometheus"
                     },
                     "editorMode": "code",
-                    "expr": "rate(monad_execution_ledger_num_tx_commits{job=~\"${net}.*\"}[60s])",
+                    "expr": "rate(monad_execution_ledger_num_tx_commits[60s])",
                     "instant": false,
                     "legendFormat": "{{instance}}",
                     "range": true,
@@ -2581,7 +2581,7 @@
                         "uid": "Prometheus"
                     },
                     "editorMode": "code",
-                    "expr": "rate(monad_state_consensus_events_local_timeout{job=~\"${net}.*\"}[60s])",
+                    "expr": "rate(monad_state_consensus_events_local_timeout[60s])",
                     "instant": false,
                     "legendFormat": "{{instance}}",
                     "range": true,
@@ -2681,7 +2681,7 @@
                         "uid": "Prometheus"
                     },
                     "editorMode": "code",
-                    "expr": "rate(monad_state_consensus_events_failed_ts_validation{job=~\"${net}.*\"}[60s])",
+                    "expr": "rate(monad_state_consensus_events_failed_ts_validation[60s])",
                     "instant": false,
                     "legendFormat": "{{instance}}",
                     "range": true,
@@ -2781,7 +2781,7 @@
                         "uid": "Prometheus"
                     },
                     "editorMode": "code",
-                    "expr": "rate(monad_state_consensus_events_rx_execution_lagging{job=~\"${net}.*\"}[60s])",
+                    "expr": "rate(monad_state_consensus_events_rx_execution_lagging[60s])",
                     "instant": false,
                     "legendFormat": "{{instance}}",
                     "range": true,
@@ -2881,7 +2881,7 @@
                         "uid": "Prometheus"
                     },
                     "editorMode": "code",
-                    "expr": "rate(monad_state_blocksync_events_payload_response_successful{job=~\"${net}.*\"}[60s])",
+                    "expr": "rate(monad_state_blocksync_events_payload_response_successful[60s])",
                     "instant": false,
                     "legendFormat": "{{instance}}",
                     "range": true,
@@ -2896,26 +2896,6 @@
     "refresh": "5s",
     "schemaVersion": 42,
     "tags": [],
-    "templating": {
-        "list": [
-            {
-                "current": {
-                    "text": "otel-collector",
-                    "value": "otel-collector"
-                },
-                "name": "net",
-                "options": [
-                    {
-                        "selected": true,
-                        "text": "otel-collector",
-                        "value": "otel-collector"
-                    }
-                ],
-                "query": "otel-collector",
-                "type": "textbox"
-            }
-        ]
-    },
     "time": {
         "from": "now-30m",
         "to": "now"

@@ -1,8 +1,6 @@
 services:
   prometheus:
-    build:
-      context: ./prometheus
-      dockerfile: Dockerfile
+    build: ./prometheus
     container_name: solonet-prometheus
     restart: unless-stopped
     command:
@@ -15,9 +13,7 @@ services:
       - "host.docker.internal:host-gateway"
 
   grafana:
-    build:
-      context: ./grafana
-      dockerfile: Dockerfile
+    build: ./grafana
     container_name: solonet-grafana
     restart: unless-stopped
     ports:
