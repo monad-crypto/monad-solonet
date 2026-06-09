@@ -16,8 +16,8 @@ services:
 
   grafana:
     build:
-      context: .
-      dockerfile: grafana/Dockerfile
+      context: ./grafana
+      dockerfile: Dockerfile
     container_name: solonet-grafana
     restart: unless-stopped
     ports:
