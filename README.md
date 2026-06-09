@@ -83,9 +83,9 @@ Available endpoints:
 
 | Service | URL |
 |----------|----------|
-| Grafana | http://localhost:13000 |
-| Prometheus | http://localhost:19090 |
-| Node Exporter | http://localhost:19100 |
+| Grafana | http://localhost:3000 |
+| Prometheus | http://localhost:9090 |
+| Node Exporter | http://localhost:9100 |
 
 Default Grafana credentials:
 

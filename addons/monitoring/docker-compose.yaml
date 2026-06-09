@@ -1,14 +1,15 @@
 services:
   prometheus:
-    image: prom/prometheus:latest
+    build:
+      context: ./prometheus
+      dockerfile: Dockerfile
     container_name: solonet-prometheus
     restart: unless-stopped
     command:
       - "--config.file=/etc/prometheus/prometheus.yml"
     ports:
-      - "19090:9090"
+      - "9090:9090"
     volumes:
-      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
       - prometheus-data:/prometheus
     extra_hosts:
       - "host.docker.internal:host-gateway"
@@ -20,13 +21,15 @@ services:
     container_name: solonet-grafana
     restart: unless-stopped
     ports:
-      - "13000:3000"
+      - "3000:3000"
     environment:
       GF_SECURITY_ADMIN_USER: admin
       GF_SECURITY_ADMIN_PASSWORD: admin
       GF_USERS_ALLOW_SIGN_UP: "false"
     volumes:
       - grafana-data:/var/lib/grafana
+    depends_on:
+      - prometheus
 
   node-exporter:
     image: prom/node-exporter:latest
@@ -37,7 +40,7 @@ services:
       - "--path.rootfs=/host"
       - "--web.listen-address=:9100"
     ports:
-      - "19100:9100"
+      - "9100:9100"
     volumes:
       - "/:/host:ro,rslave"
 
