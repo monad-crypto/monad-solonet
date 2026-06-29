@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.6.0](https://github.com/monad-crypto/monad-solonet/compare/v0.5.0...v0.6.0) (2026-06-10)
+
+
+### Features
+
+* add optional monitoring stack ([#22](https://github.com/monad-crypto/monad-solonet/issues/22)) ([945e884](https://github.com/monad-crypto/monad-solonet/commit/945e88496d13a60f5b08796e28bd87bda4429718))
+* upgrade to monad 0.14.5 ([#23](https://github.com/monad-crypto/monad-solonet/issues/23)) ([c35a6aa](https://github.com/monad-crypto/monad-solonet/commit/c35a6aa3b70876e50b9a5d8b71d1d667fa0f5c57))
+
 ## [0.5.0](https://github.com/monad-crypto/monad-solonet/compare/v0.4.0...v0.5.0) (2026-05-22)
 
 
