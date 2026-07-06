@@ -20,7 +20,7 @@ jobs:
 
       - name: Run pre-commit hooks
         run: |
-          git log --format="%B" ${{ github.event.pull_request.base.sha }}..${{ github.event.pull_request.head.sha }} | \
+          git log --format="%s" ${{ github.event.pull_request.base.sha }}..${{ github.event.pull_request.head.sha }} | \
           while IFS= read -r line; do
             [ -z "$line" ] && continue
             tmpfile=$(mktemp)

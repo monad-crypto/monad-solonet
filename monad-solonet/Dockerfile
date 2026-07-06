@@ -2,6 +2,7 @@ FROM ubuntu:noble AS solonet
 
 ARG OTEL_VERSION=0.139.0
 ARG SOLONET_VERSION=dev
+ARG MONAD_VERSION=0.15.0
 
 ENV ETH_RPC_URL="http://localhost:8080"
 ENV SOLONET_VERSION=${SOLONET_VERSION}
@@ -66,7 +67,6 @@ COPY dashboard/dashboard.conf /etc/nginx/conf.d/.
 RUN echo "window.SOLONET_VERSION='${SOLONET_VERSION}';" > /dashboard/web/version.js
 
 # Install monad package
-ARG MONAD_VERSION=0.14.5
 RUN apt-get update \
     && apt-get install -y monad=${MONAD_VERSION} \
     && rm -rf /var/lib/apt/lists/*
