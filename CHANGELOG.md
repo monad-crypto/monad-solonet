@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.7.0](https://github.com/monad-crypto/monad-solonet/compare/v0.6.0...v0.7.0) (2026-07-06)
+
+
+### Features
+
+* upgrade to monad 0.15.0 ([#27](https://github.com/monad-crypto/monad-solonet/issues/27)) ([0ab8947](https://github.com/monad-crypto/monad-solonet/commit/0ab894744ba1fe9b1d3614e18e3eec7ee84f4803))
+
 ## [0.6.0](https://github.com/monad-crypto/monad-solonet/compare/v0.5.0...v0.6.0) (2026-06-10)
 
 
