@@ -56,17 +56,44 @@ docker run --rm -it \
 - Exposes RPC endpoint at http://localhost:8080
 - Automatic node configuration and validator staking
 - Pre-installed tooling: `forge`, `cast`, `staking-cli`, `monad-status`
+- Configurable CPU execution policies (throttling, native mode, CPU pinning)
 
 https://github.com/user-attachments/assets/4e2fb3cb-cd05-4544-8f89-30eb0675cc20
 
 Runtime notes:
 - Epoch duration set to `10_000` blocks, about 1 hour
-- Monad processes are limited to `0.5` CPU to reduce host resource usage
+- By default, Monad processes are limited to `0.5` CPU to reduce host resource usage
+- CPU limits can be customized or disabled via environment variables
+- Native performance mode with CPU pinning is supported
 - TrieDB runs on a loopback disk stored inside the container
 - Restarting containers preserves TrieDB data. Recreating containers resets TrieDB state.
 - Static IP assignment is used to avoid DHCP drift and maintain stable node record signatures
 
 _Disclaimer: This project is intended for **development and testing purposes only**. **Do not use in production**._
+
+## CPU execution policies
+
+By default (`MONAD_SOLONET_CPU_LIMIT=true`), Monad processes are throttled via `cpulimit` to 50% CPU usage. Set `MONAD_SOLONET_CPU_LIMIT=false` to switch to CPU pinning via `taskset` instead.
+
+Default CPU throttling (50%):
+
+```sh
+MONAD_SOLONET_CPU_LIMIT=true   # default
+MONAD_CPU_LIMIT=50             # cpulimit percentage, default 50
+```
+
+Pin Monad processes to specific CPU cores:
+
+```sh
+MONAD_SOLONET_CPU_LIMIT=false
+
+# Override per-process CPU sets (optional — defaults shown):
+MONAD_BFT_TASKSET_CPUS=8,9,10,11
+MONAD_EXECUTION_TASKSET_CPUS=1,2,3,4,5,6,7
+MONAD_RPC_TASKSET_CPUS=12,13,14,15
+```
+
+When CPU pinning is enabled (`false`), IO-ring kernel threads are also pinned to their respective CPUs for maximum throughput.
 
 ## Monitoring
 
@@ -158,7 +185,7 @@ Tokens              | Unlimited                   | Limited (MON, faucet)
 Protocol version    | monad_dev (latest features) | Current MONAD_REVISION/EVM_REVISION
 Perf realism        | ❌ Not realistic            | ✅ Realistic
 Storage             | Loopback (TrieDB)           | Real disk
-CPU                 | Throttled, no pinning       | No artificial limits
+CPU                 | Throttled by default, optional native mode and CPU pinning | No artificial limits
 Binary              | Dev/custom setup            | Official/supported binaries
 Env                 | Docker                      | Host
 Setup style         | Flexible, dev-focused       | Follows official docs
@@ -196,6 +223,15 @@ Start a full-components network:
 ```sh
 docker compose -f networks/full-network.yaml up --build
 ```
+
+### Native performance examples
+
+Start a native performance network with CPU pinning:
+```sh
+MONAD_SOLONET_CPU_LIMIT=false docker compose up --build
+```
+
+Adjust `MONAD_BFT_TASKSET_CPUS`, `MONAD_EXECUTION_TASKSET_CPUS`, and `MONAD_RPC_TASKSET_CPUS` to match your machine's CPU topology.
 
 ### Reset and teardown
 

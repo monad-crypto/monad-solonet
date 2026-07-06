@@ -40,6 +40,7 @@ v_0_7_0_activation = 0
 v_0_8_0_activation = 0
 v_0_10_0_activation = 0
 v_0_11_0_activation = 0
+v_0_12_0_activation = 0
 
 execution_v_one_activation = 0
 execution_v_two_activation = 0
@@ -47,6 +48,16 @@ execution_v_four_activation = 0
 
 [staking_config]
 staking_activation = 2
+
 [staking_config.block_reward_v_one]
-block_reward_activation = 3
-block_reward_mon = 1
+# MIP-12 block reward: 18 MON. Active once staking rewards kick in (epoch 3,
+# matching the devnet default schedule).
+block_reward_activation = { Epoch = 3 }
+block_reward_mon = 18
+
+[staking_config.block_reward_v_two]
+# Second reward tier is unused (matches BlockRewardConfig::unused()). The real
+# default is Epoch::MAX (u64::MAX); TOML's integer parser is i64-bounded, so we
+# use a far-future epoch instead — it never activates on a solonet.
+block_reward_activation = { Epoch = 9000000000 }
+block_reward_mon = 0

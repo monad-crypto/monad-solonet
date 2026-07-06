@@ -22,11 +22,17 @@ start_service otelcol
 start_service monad-rpc
 start_service monad-execution
 start_service monad-bft
+
+log "Waiting for the blockchain to start"
 run_task wait-blockchain.sh
 
 log "Starting services"
 start_service monad-ledger-tail
 start_service sync-forkpoint-files
+
+if [[ "${MONAD_TXGEN_AUTO_START:-false}" == "true" ]]; then
+  start_service monad-txgen
+fi
 
 log "Services"
 supervisorctl status || true

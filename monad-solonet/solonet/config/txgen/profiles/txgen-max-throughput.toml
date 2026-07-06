@@ -1,0 +1,20 @@
+root_private_keys = [
+  "5de4111afa1a4b94908f83103eb1f1706367c2e68ca870fc3fb9a804cdab365a",
+]
+
+chain_id = 20143
+rpc_urls = ["http://localhost:8080"]
+refresh_delay_secs = 1
+
+[[workload_groups]]
+name = "max-throughput"
+
+[[workload_groups.traffic_gens]]
+tps = 12000
+sender_seed = 42000
+senders = 1440
+recipient_seed = 200
+recipients = 1
+sender_group_size = 10
+tx_per_sender = 15
+gen_mode.random_priority_fee = { tx_type = "native", contract_count = 1 }
