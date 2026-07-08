@@ -16,5 +16,6 @@ senders = 1440
 recipient_seed = 200
 recipients = 1000000
 sender_group_size = 20
-tx_per_sender = 30
+tx_per_sender = 10
+set_tx_gas_limit = 50000
 gen_mode.non_deterministic_storage = {}
