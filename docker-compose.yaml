@@ -13,11 +13,11 @@ services:
       MONAD_TRIEDB_DEVICE_NAME: "nvme0n1"
 
       MONAD_TXGEN_AUTO_START: "true"
-      MONAD_TXGEN_PROFILE: "txgen-light.toml"
-    # MONAD_TXGEN_PROFILE: "txgen-standard.toml"
-    # MONAD_TXGEN_PROFILE: "txgen-max-throughput.toml"
-    # MONAD_TXGEN_PROFILE: "txgen-mempool-stress.toml"
-    # MONAD_TXGEN_PROFILE: "txgen-evm-stress.toml"
+      # MONAD_TXGEN_PROFILE: "txgen-light.toml"
+      # MONAD_TXGEN_PROFILE: "txgen-standard.toml"
+      # MONAD_TXGEN_PROFILE: "txgen-max-throughput.toml"
+      # MONAD_TXGEN_PROFILE: "txgen-evm-stress.toml"
+      MONAD_TXGEN_PROFILE: "txgen-mempool-stress.toml"
 
     devices:
       - /dev/nvme0n1:/dev/nvme0n1
