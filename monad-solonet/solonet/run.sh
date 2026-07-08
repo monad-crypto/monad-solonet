@@ -9,7 +9,19 @@ run_task() {
 run_task ../lib/env.sh
 run_task ../lib/helpers.sh
 
-/usr/bin/supervisord -c /solonet/config/supervisord.conf
+/usr/bin/supervisord -c /solonet/config/supervisord.conf &
+SUPERVISORD_PID=$!
+
+shutdown() {
+  log "Received termination signal, shutting down supervisord"
+  kill -TERM "$SUPERVISORD_PID" 2>/dev/null || true
+  wait "$SUPERVISORD_PID" 2>/dev/null || true
+  exit 0
+}
+trap shutdown TERM INT
+
+# Wait for supervisord's control socket before issuing supervisorctl commands
+until [[ -S /var/run/supervisor.sock ]]; do sleep 0.1; done
 
 run_task check-system.sh
 run_task upgrade-monad.sh
@@ -40,4 +52,4 @@ supervisorctl status || true
 run_task register-validator.sh
 run_task print-info.sh
 
-tail -f /dev/null
+wait "$SUPERVISORD_PID"
