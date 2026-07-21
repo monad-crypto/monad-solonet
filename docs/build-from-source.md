@@ -38,7 +38,7 @@ build:
   context: monad-solonet
   target: install-apt
   args:
-    MONAD_VERSION: 0.15.0
+    MONAD_VERSION: 0.15.1
 ```
 
 Then start Solonet:

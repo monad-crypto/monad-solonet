@@ -1,7 +1,7 @@
 .PHONY: monad-builder clone-monad-bft
 
-MONAD_BUILDER_REF ?= v0.15.0
-MONAD_BFT_REF ?= master
+MONAD_BUILDER_REF ?= v0.15.1
+MONAD_BFT_REF ?= v0.15.1
 
 all: monad-builder clone-monad-bft
 
