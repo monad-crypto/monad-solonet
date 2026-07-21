@@ -25,6 +25,8 @@ RUN apt-get update && apt-get install -y \
     tini \
     vim \
     yq \
+    sudo \
+    expect \
     && rm -rf "/var/lib/apt/lists/*"
 
 # Install staking-cli
@@ -74,6 +76,12 @@ RUN apt-get update \
 # Setup solonet
 COPY solonet/   /solonet/
 COPY bin/       /usr/local/bin/
+
+# Default env file, loaded at startup by run-monad-bft.sh, run-monad-execution.sh,
+# run-monad-rpc.sh and the other run-monad-* scripts
+ADD solonet/config/.env /home/monad/.env
+ADD bashrc /root/.bashrc
+
 ENTRYPOINT ["/usr/bin/tini"]
 CMD ["/solonet/run.sh"]
 

@@ -1,0 +1,35 @@
+phase-a() {
+  supervisorctl stop monad-bft monad-execution monad-rpc
+  sudo apt update && sudo apt install --reinstall monad=0.15.2 -y --allow-downgrades --allow-change-held-packages
+  sudo apt-mark hold monad
+  monad-mpt --repair --storage /dev/triedb
+  monad-mpt --activate-secondary --state-machine monad --storage /dev/triedb
+  ulimit -n 65536
+  SNAP_DIR="/home/monad/monad-bft/snapshots/page-migration"
+  mkdir -p "$SNAP_DIR"
+  monad-cli --version latest_finalized --dump-binary-snapshot "$SNAP_DIR" --db /dev/triedb
+  monad-cli --version latest_finalized --load-binary-snapshot "$SNAP_DIR" --secondary --db /dev/triedb
+  supervisorctl start monad-bft monad-execution monad-rpc
+}
+
+phase-b() {
+  supervisorctl stop monad-bft monad-execution monad-rpc
+  local seconds="${1:-60}"
+  local seconds="${1:-60}"
+  local fork_ts=$(date -d "now + ${seconds} sec" +%s)
+  echo "export MONAD_DEVNET_FORK_TS=${fork_ts}" >/home/monad/.env
+  cat /home/monad/.env
+  supervisorctl start monad-bft monad-execution monad-rpc
+  while [ "$(date +%s)" -lt "$fork_ts" ]; do
+    printf "\rwaiting... %ds remaining" "$((fork_ts - $(date +%s)))"
+    sleep 1
+  done
+  echo -e "\nfork reached: $(date -d "@${fork_ts}")"
+}
+
+phase-c() {
+  supervisorctl stop monad-bft monad-execution monad-rpc
+  monad-mpt --promote-secondary --storage /dev/triedb
+  monad-mpt --deactivate-secondary --storage /dev/triedb
+  supervisorctl start monad-bft monad-execution monad-rpc
+}

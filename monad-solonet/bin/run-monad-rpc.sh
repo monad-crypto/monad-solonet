@@ -1,5 +1,6 @@
 #!/bin/bash
 set -e
+source /home/monad/.env || true
 
 MONAD_RPC_CUSTOM_BIN="${MONAD_RPC_CUSTOM_BIN:-monad-rpc}"
 export RUST_LOG="${RUST_LOG:-debug,h2=warn,tower=warn,opentelemetry_sdk=warn,opentelemetry-otlp=warn}"

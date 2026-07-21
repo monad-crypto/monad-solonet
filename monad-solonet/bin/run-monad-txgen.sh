@@ -1,5 +1,6 @@
 #!/bin/bash
 set -e
+source /home/monad/.env || true
 
 MONAD_TXGEN_CUSTOM_BIN="${MONAD_TXGEN_CUSTOM_BIN:-monad-txgen}"
 export RUST_LOG="${RUST_LOG:-debug,h2=warn,tower=warn,opentelemetry_sdk=warn,opentelemetry-otlp=warn}"

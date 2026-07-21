@@ -1,5 +1,6 @@
 #!/bin/bash
 set -e
+source /home/monad/.env || true
 
 MONAD_LEDGER_TAIL_CUSTOM_BIN="${MONAD_LEDGER_TAIL_CUSTOM_BIN:-monad-ledger-tail}"
 

@@ -1,5 +1,6 @@
 #!/bin/bash
 set -e
+source /home/monad/.env || true
 
 MONAD_EXECUTION_CUSTOM_BIN="${MONAD_EXECUTION_CUSTOM_BIN:-monad}"
 
