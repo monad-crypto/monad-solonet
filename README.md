@@ -68,6 +68,12 @@ Runtime notes:
 
 _Disclaimer: This project is intended for **development and testing purposes only**. **Do not use in production**._
 
+> [!WARNING]
+> The dashboard and CORS-enabled RPC endpoint are unauthenticated development
+> tools. Keep them on a trusted local network. The dashboard displays
+> deterministic development account keys; never fund those accounts on a
+> public network or reuse them for non-development purposes.
+
 ## Monitoring
 
 Solonet includes an optional monitoring stack based on Prometheus, Grafana and Node Exporter.
