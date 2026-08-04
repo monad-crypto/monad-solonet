@@ -4,7 +4,12 @@ services:
     network_mode: host
     privileged: true
 
-    # Run solonet using performance mode
+    ## Run solonet using performance mode
+    ##
+    ## WARNING: destructive action - this mode wipes and takes exclusive
+    ## ownership of MONAD_TRIEDB_DEVICE_NAME
+    ## Make sure to set the correct device for TrieDB
+
     # environment:
     #   SHOW_RPC_METHODS: "false"
     #   MONAD_SOLONET_CPU_LIMIT: "false"
@@ -30,12 +35,14 @@ services:
 
     build:
       context: monad-solonet
-      # # Build and run Solonet using Monad official APT package (default)
+      ## Build and run Solonet using Monad official APT package (default)
+
       # target: install-apt
       # args:
       #   MONAD_VERSION: 0.14.2
 
-      # # Build and run Solonet using Monad remote source
+      ## Build and run Solonet using Monad remote source
+
       # target: install-remote
       # args:
       #   MONAD_BFT_REPO_URL: "https://github.com/category-labs/monad-bft.git"
@@ -43,7 +50,8 @@ services:
       #   MONAD_EXECUTION_REPO_URL: "https://github.com/category-labs/monad.git"
       #   MONAD_EXECUTION_REPO_TARGET: "v0.14.2" # branch (master), tag, commit hash (long-form)
 
-      # Build and run Solonet using Monad local source
+      ## Build and run Solonet using Monad local source
+
       # target: install-local
       # args:
       #   MONAD_LOCAL_SOURCE: source/monad-bft/
