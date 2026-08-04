@@ -56,12 +56,15 @@ docker run --rm -it \
 - Exposes RPC endpoint at http://localhost:8080
 - Automatic node configuration and validator staking
 - Pre-installed tooling: `forge`, `cast`, `staking-cli`, `monad-status`
+- Configurable CPU execution policies (throttling, native mode, CPU pinning)
 
 https://github.com/user-attachments/assets/4e2fb3cb-cd05-4544-8f89-30eb0675cc20
 
 Runtime notes:
 - Epoch duration set to `10_000` blocks, about 1 hour
-- Monad processes are limited to `0.5` CPU to reduce host resource usage
+- By default, Monad processes are limited to `0.5` CPU to reduce host resource usage
+- CPU limits can be customized or disabled via environment variables
+- Native performance mode with CPU pinning is supported
 - TrieDB runs on a loopback disk stored inside the container
 - Restarting containers preserves TrieDB data. Recreating containers resets TrieDB state.
 - Static IP assignment is used to avoid DHCP drift and maintain stable node record signatures
@@ -158,7 +161,7 @@ Tokens              | Unlimited                   | Limited (MON, faucet)
 Protocol version    | monad_dev (latest features) | Current MONAD_REVISION/EVM_REVISION
 Perf realism        | ❌ Not realistic            | ✅ Realistic
 Storage             | Loopback (TrieDB)           | Real disk
-CPU                 | Throttled, no pinning       | No artificial limits
+CPU                 | Throttled by default, optional native mode and CPU pinning | No artificial limits
 Binary              | Dev/custom setup            | Official/supported binaries
 Env                 | Docker                      | Host
 Setup style         | Flexible, dev-focused       | Follows official docs
@@ -185,16 +188,6 @@ cd monad-docker-solonet
 Start a single-validator network:
 ```sh
 docker compose up --build
-```
-
-Start a multi-validators network:
-```sh
-docker compose -f networks/multi-validators.yaml up --build
-```
-
-Start a full-components network:
-```sh
-docker compose -f networks/full-network.yaml up --build
 ```
 
 ### Reset and teardown

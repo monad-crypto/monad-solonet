@@ -79,4 +79,6 @@ echo "Dashboard:           http://localhost:8082"
 echo "RPC endpoint (CORS): http://localhost:8082/rpc/"
 echo
 
-show_rpc_methods || true
+if [[ "${SHOW_RPC_METHODS:-true}" == "true" ]]; then
+  show_rpc_methods || true
+fi
