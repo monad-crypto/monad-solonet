@@ -36,14 +36,10 @@ Ready-to-use txgen configuration profiles for different testing scenarios.
 
 ## Usage
 
-Copy a profile over the active config, or point txgen at it directly:
+Select a profile via env var (defaults to `txgen-light.toml` if unset):
 
 ```bash
-# Swap the active config
-cp profiles/txgen-standard.toml config.toml
-
-# Or override via env (appended to the txgen invocation)
-MONAD_TXGEN_EXTRA_ARGS="--config monad-solonet/solonet/config/txgen/profiles/txgen-standard.toml"
+MONAD_TXGEN_PROFILE="txgen-standard.toml"
 ```
 
 ## Sizing reference
