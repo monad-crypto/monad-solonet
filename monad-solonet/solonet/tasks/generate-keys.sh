@@ -15,13 +15,13 @@ if [[ -n "${SECP_IKM:-}" && -n "${BLS_IKM:-}" ]]; then
     --ikm "$SECP_IKM" \
     --password "${KEYSTORE_PASSWORD}" \
     --keystore-path "/shared/keys/$NODE_ID/id-secp" \
-    --key-type secp > /opt/monad/backup/secp-backup
+    --key-type secp >/opt/monad/backup/secp-backup
 
   monad-keystore import \
     --ikm "$BLS_IKM" \
     --password "${KEYSTORE_PASSWORD}" \
     --keystore-path "/shared/keys/$NODE_ID/id-bls" \
-    --key-type bls > /opt/monad/backup/bls-backup
+    --key-type bls >/opt/monad/backup/bls-backup
 
 elif [[ -z "${SECP_IKM:-}" && -z "${BLS_IKM:-}" ]]; then
   log "Generating fresh node identity"
@@ -29,12 +29,12 @@ elif [[ -z "${SECP_IKM:-}" && -z "${BLS_IKM:-}" ]]; then
   monad-keystore create \
     --key-type secp \
     --keystore-path "/shared/keys/$NODE_ID/id-secp" \
-    --password "${KEYSTORE_PASSWORD}" > /opt/monad/backup/secp-backup
+    --password "${KEYSTORE_PASSWORD}" >/opt/monad/backup/secp-backup
 
   monad-keystore create \
     --key-type bls \
     --keystore-path "/shared/keys/$NODE_ID/id-bls" \
-    --password "${KEYSTORE_PASSWORD}" > /opt/monad/backup/bls-backup
+    --password "${KEYSTORE_PASSWORD}" >/opt/monad/backup/bls-backup
 
 else
   echo "ERROR: SECP_IKM and BLS_IKM must both be set or both be unset." >&2
@@ -51,7 +51,9 @@ echo "BLS: $BLS_PUBKEY"
 log "Generate node record signature"
 sig_out=$(
   monad-sign-name-record \
-    --address "$CONTAINER_IP_ADDRESS:8000" \
+    --ip "$CONTAINER_IP_ADDRESS" \
+    --tcp-port 8000 \
+    --udp-port 8000 \
     --authenticated-udp-port 8001 \
     --direct-udp-port 8002 \
     --keystore-path "/shared/keys/$NODE_ID/id-secp" \

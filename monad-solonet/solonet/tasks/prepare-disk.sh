@@ -27,10 +27,10 @@ fi
 
 if [[ "${MONAD_TRIEDB_DEVICE_AUTO_OVERRIDE:-false}" == "true" ]]; then
   echo "Formatting MPT disk (override)"
-  monad-mpt --storage /dev/triedb --create-empty --yes
+  monad-mpt --storage /dev/triedb --state-machine monad --create-empty --yes
 else
   echo "Formatting MPT disk (if required)"
-  monad-mpt --storage /dev/triedb --create
+  monad-mpt --storage /dev/triedb --state-machine monad --create
 fi
 
 if [[ ! -f /shared/network-started ]]; then
