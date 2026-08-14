@@ -156,6 +156,18 @@ def validate_network(data: dict[str, Any], path: Path) -> None:
                 f"{path}: node {node_id}: invalid stake_weight '{stake_weight}'"
             )
 
+        node_env = node.get("env", {})
+        if not isinstance(node_env, dict):
+            raise NetworkError(f"{path}: node {node_id}.env must be a table")
+
+        # A node and its profile setting the same variable is ambiguous
+        collisions = sorted(node_env.keys() & profiles[profile_name].get("env", {}).keys())
+        if collisions:
+            raise NetworkError(
+                f"{path}: node {node_id} and profile '{profile_name}' both set "
+                f"{', '.join(collisions)} — keep it in one of them"
+            )
+
 
 # ── Network loading ──────────────────────────────────────────────────────────
 
@@ -274,6 +286,9 @@ def build_compose(network_path: Path) -> str:
             volumes.append(f"{source}:{target}:{mode}")
 
         for key, value in profile.get("env", {}).items():
+            env[key] = value
+
+        for key, value in node.get("env", {}).items():
             env[key] = value
 
         profile_build_context = (
