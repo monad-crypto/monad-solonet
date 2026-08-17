@@ -390,7 +390,8 @@ def parse_args(argv: list[str]) -> tuple[Path, str, list[str]]:
             "\n"
             "native commands:\n"
             "  render    print the generated docker-compose.yaml to stdout\n"
-            "  up        run preflight checks, then docker compose up\n"
+            "  up        run preflight checks, then docker compose up --build\n"
+            "            (pass --no-build to reuse the existing images)\n"
             "\n"
             "all other commands (down, logs, ps, exec, ...) are passed to docker compose.",
             file=sys.stderr,
@@ -420,6 +421,12 @@ def main(argv: list[str]) -> int:
 
         if command == "up":
             preflight(network_path, compose_content)
+            # docker compose only builds when the image is missing, so an image
+            # built from an older checkout keeps being reused: the baked solonet
+            # scripts drift out of sync with the monad version pinned in the
+            # Dockerfile. Always rebuild unless the caller opts out.
+            if not {"--build", "--no-build"} & set(compose_args):
+                compose_args = ["--build"] + compose_args
 
         run_command(
             docker_compose_base(project_name) + [command] + compose_args,
