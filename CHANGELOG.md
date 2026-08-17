@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.8.0](https://github.com/monad-crypto/monad-solonet/compare/v0.7.0...v0.8.0) (2026-08-17)
+
+
+### Features
+
+* always rebuild docker image ([#34](https://github.com/monad-crypto/monad-solonet/issues/34)) ([5fc1f74](https://github.com/monad-crypto/monad-solonet/commit/5fc1f7491e55c9fa96ddbba71bea41f8f02862d8))
+* native performance cluster ([#35](https://github.com/monad-crypto/monad-solonet/issues/35)) ([e1af7d3](https://github.com/monad-crypto/monad-solonet/commit/e1af7d3dde7220c2e23421f066b0b5062e873057))
+* native performance mode with txgen profiles and CPU policy ([#29](https://github.com/monad-crypto/monad-solonet/issues/29)) ([b66e432](https://github.com/monad-crypto/monad-solonet/commit/b66e43225aefd7342cb33dad45dc4b6f6a7acd61))
+* upgrade to monad 0.15.1 ([#30](https://github.com/monad-crypto/monad-solonet/issues/30)) ([d6dda34](https://github.com/monad-crypto/monad-solonet/commit/d6dda34105c746fb740335d90046d6999e9df0d0))
+* upgrade to monad 0.16.0 ([#33](https://github.com/monad-crypto/monad-solonet/issues/33)) ([f11e2d3](https://github.com/monad-crypto/monad-solonet/commit/f11e2d361cbe95736d1aee50b561b5ac86d325cd))
+
 ## [0.7.0](https://github.com/monad-crypto/monad-solonet/compare/v0.6.0...v0.7.0) (2026-07-06)
 
 
