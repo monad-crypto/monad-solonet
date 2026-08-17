@@ -37,11 +37,14 @@ node_type = "validator"
 profile = "custom_exec_cache"
 stake_weight = 2
 
+# A node's `env` holds settings that belong to it rather than to everything
+# sharing its profile — here only node 3 generates load.
 [[nodes]]
 id = 3
 node_type = "validator"
 profile = "default"
 stake_weight = 1
+env = { MONAD_TXGEN_AUTO_START = "true", MONAD_TXGEN_PROFILE = "txgen-standard.toml" }
 
 [[nodes]]
 id = 4

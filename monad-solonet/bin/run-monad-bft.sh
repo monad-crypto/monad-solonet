@@ -3,6 +3,7 @@ set -e
 
 MONAD_BFT_CUSTOM_BIN="${MONAD_BFT_CUSTOM_BIN:-monad-node}"
 MONAD_BFT_TASKSET_CPUS="${MONAD_BFT_TASKSET_CPUS:-8,9,10,11}"
+MONAD_BFT_SQ_THREAD_CPU="${MONAD_BFT_SQ_THREAD_CPU:-8}"
 export RUST_LOG="${RUST_LOG:-debug,h2=warn,tower=warn,opentelemetry_sdk=warn,opentelemetry-otlp=warn}"
 export REMOTE_FORKPOINT_URL="${REMOTE_FORKPOINT_URL:-http://localhost:8082/shared/forkpoint.toml}"
 export REMOTE_VALIDATORS_URL="${REMOTE_VALIDATORS_URL:-http://localhost:8082/shared/validators.toml}"
@@ -34,5 +35,5 @@ read -ra EXTRA_ARGS <<<"${MONAD_BFT_EXTRA_ARGS:-}"
 if [[ "${MONAD_SOLONET_CPU_LIMIT}" == "true" ]]; then
   exec cpulimit --foreground -l "${MONAD_CPU_LIMIT:-50}" -- "$MONAD_BFT_CUSTOM_BIN" "${ARGS[@]}" "${EXTRA_ARGS[@]}"
 else
-  exec taskset -c "$MONAD_BFT_TASKSET_CPUS" "$MONAD_BFT_CUSTOM_BIN" "${ARGS[@]}" --statesync-sq-thread-cpu=8 "${EXTRA_ARGS[@]}"
+  exec taskset -c "$MONAD_BFT_TASKSET_CPUS" "$MONAD_BFT_CUSTOM_BIN" "${ARGS[@]}" --statesync-sq-thread-cpu="$MONAD_BFT_SQ_THREAD_CPU" "${EXTRA_ARGS[@]}"
 fi

@@ -1,0 +1,38 @@
+# solonetctl network configuration
+#
+# Native performance mode with each node on its own host CPUs.
+#
+# MONAD_EXECUTION_SQ_THREAD_CPU is not optional here! Execution's io_uring poll
+# thread busy-spins on the one CPU it is bound to, and it defaults to CPU 1 for
+# every node so one node would starve the others and the chain would ultimately
+# not progress.
+
+name = "3v-native-pinned"
+subnet = "172.21.70.0/24"
+port_base = 50500
+stake_unit = 100000
+
+[profiles.native]
+profile_kind = "default"
+binary_origin = "image"
+
+[profiles.native.env]
+MONAD_SOLONET_CPU_LIMIT = "false"
+
+[[nodes]]
+id = 1
+node_type = "validator"
+profile = "native"
+env = { MONAD_EXECUTION_SQ_THREAD_CPU = "1", MONAD_EXECUTION_TASKSET_CPUS = "1-7", MONAD_BFT_SQ_THREAD_CPU = "8", MONAD_BFT_TASKSET_CPUS = "8-11", MONAD_RPC_TASKSET_CPUS = "12-15" }
+
+[[nodes]]
+id = 2
+node_type = "validator"
+profile = "native"
+env = { MONAD_EXECUTION_SQ_THREAD_CPU = "16", MONAD_EXECUTION_TASKSET_CPUS = "16-22", MONAD_BFT_SQ_THREAD_CPU = "23", MONAD_BFT_TASKSET_CPUS = "23-26", MONAD_RPC_TASKSET_CPUS = "27-30" }
+
+[[nodes]]
+id = 3
+node_type = "validator"
+profile = "native"
+env = { MONAD_EXECUTION_SQ_THREAD_CPU = "31", MONAD_EXECUTION_TASKSET_CPUS = "31-37", MONAD_BFT_SQ_THREAD_CPU = "38", MONAD_BFT_TASKSET_CPUS = "38-41", MONAD_RPC_TASKSET_CPUS = "42-45" }
