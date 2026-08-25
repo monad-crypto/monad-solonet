@@ -2,7 +2,7 @@ FROM ubuntu:noble AS solonet
 
 ARG OTEL_VERSION=0.139.0
 ARG SOLONET_VERSION=dev
-ARG MONAD_VERSION=0.16.0
+ARG MONAD_VERSION=0.16.1
 
 ENV ETH_RPC_URL="http://localhost:8080"
 ENV SOLONET_VERSION=${SOLONET_VERSION}
@@ -40,10 +40,9 @@ RUN curl -sSL https://bucket.monadinfra.com/scripts/monad-status.sh \
     && chmod +x /usr/local/bin/monad-status
 
 # Install foundry
-RUN curl -L https://foundry.paradigm.xyz | bash \
-    && . ~/.bashrc \
-    && foundryup
 ENV PATH="/root/.foundry/bin:${PATH}"
+RUN curl -L https://foundry.paradigm.xyz | bash \
+    && foundryup
 
 # Install OTEL collector
 RUN curl -fsSL -o /tmp/otelcol_linux_amd64.deb \
