@@ -40,10 +40,9 @@ RUN curl -sSL https://bucket.monadinfra.com/scripts/monad-status.sh \
     && chmod +x /usr/local/bin/monad-status
 
 # Install foundry
-RUN curl -L https://foundry.paradigm.xyz | bash \
-    && . ~/.bashrc \
-    && foundryup
 ENV PATH="/root/.foundry/bin:${PATH}"
+RUN curl -L https://foundry.paradigm.xyz | bash \
+    && foundryup
 
 # Install OTEL collector
 RUN curl -fsSL -o /tmp/otelcol_linux_amd64.deb \
