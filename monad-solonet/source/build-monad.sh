@@ -7,6 +7,9 @@ MONAD_VERSION="0.0.0"
 export ASMFLAGS=-march=haswell
 export CC=gcc-15
 export CFLAGS=-march=haswell
+# The build.rs files drive cmake via the cmake crate, which defaults to recursive
+# make. Ninja parallelises far better.
+export CMAKE_GENERATOR=Ninja
 export CXX=g++-15
 export CXXFLAGS="-march=haswell"
 export GIT_COMMIT_HASH=$(git rev-parse HEAD)
