@@ -85,6 +85,8 @@ make clone-monad-bft
 
 This does a shallow clone of `monad-bft` into `monad-solonet/source/monad-bft/`, fetching only the top-level source and the `monad-execution` submodule. Keeping the checkout shallow keeps the Docker build context small.
 
+That location is only a convention. The source is passed as a **named build context**, so it can live anywhere on the host: a checkout you already have, on another disk, outside this repository.
+
 To clone a specific branch or tag:
 
 ```sh
@@ -99,11 +101,16 @@ Uncomment the `install-local` block in `docker-compose.yaml`:
 build:
   context: monad-solonet
   target: install-local
-  args:
-    MONAD_LOCAL_SOURCE: source/monad-bft/
+  additional_contexts:
+    monad-bft-src: ./monad-solonet/source/
 ```
 
-`MONAD_LOCAL_SOURCE` is a path relative to the `monad-solonet/` build context.
+`monad-bft-src` is the name `builder-local` copies from
+(`COPY --from=monad-bft-src monad-bft/ /app/monad-bft/`). Because it is its own context,
+the path is free: anywhere on the host, absolute or relative to the compose
+file. This is the one way to build from a source tree outside the main build
+context. Docker cannot `COPY` from outside it, and will not follow a symlink
+out of it either.
 
 ### 3. Start Solonet
 

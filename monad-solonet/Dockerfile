@@ -100,8 +100,6 @@ RUN --mount=type=cache,id=cargo-registry,target=/usr/local/cargo/registry \
 ###################################################################
 FROM monad-builder AS builder-local
 
-ARG MONAD_LOCAL_SOURCE="./source/monad-bft"
-
 RUN echo 'deb [trusted=yes] https://repo.goreleaser.com/apt/ /' > /etc/apt/sources.list.d/goreleaser.list \
     && apt-get update \
     && apt-get install -y nfpm binutils \
@@ -109,7 +107,8 @@ RUN echo 'deb [trusted=yes] https://repo.goreleaser.com/apt/ /' > /etc/apt/sourc
 
 COPY source/*.sh /usr/local/bin/
 COPY source/nfpm.yml /app/nfpm.yml
-COPY ${MONAD_LOCAL_SOURCE} /app/monad-bft/
+# Named build context so it can live anywhere on the host.
+COPY --from=monad-bft-src ./monad-bft/ /app/monad-bft/
 
 WORKDIR /app/monad-bft/
 RUN --mount=type=cache,id=cargo-registry,target=/usr/local/cargo/registry \
