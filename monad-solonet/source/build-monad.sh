@@ -34,10 +34,11 @@ cargo build -vv --release \
   --example txgen
 
 cd /app/monad-bft/monad-execution/
+# package-monad.sh strips every binary it ships, so we build Release binaries directly
 cmake \
   -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=TRUE \
   -DCMAKE_TOOLCHAIN_FILE:STRING=category/core/toolchains/gcc-avx2.cmake \
-  -DCMAKE_BUILD_TYPE:STRING=RelWithDebInfo \
+  -DCMAKE_BUILD_TYPE:STRING=Release \
   -B /build -G Ninja
 # Only build what package-monad.sh actually needs, i.e., we don't care about tests.
 # Allows us to cut build time in half and build size by a factor of 10.
