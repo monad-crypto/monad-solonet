@@ -36,4 +36,6 @@ cmake \
   -DCMAKE_TOOLCHAIN_FILE:STRING=category/core/toolchains/gcc-avx2.cmake \
   -DCMAKE_BUILD_TYPE:STRING=RelWithDebInfo \
   -B /build -G Ninja
-cmake --build /build --target all
+# Only build what package-monad.sh actually needs, i.e., we don't care about tests.
+# Allows us to cut build time in half and build size by a factor of 10.
+cmake --build /build --target monad monad-cli monad-mpt
