@@ -2,7 +2,7 @@ FROM ubuntu:noble AS solonet
 
 ARG OTEL_VERSION=0.139.0
 ARG SOLONET_VERSION=dev
-ARG MONAD_VERSION=0.16.1
+ARG MONAD_VERSION=0.16.2
 
 ENV ETH_RPC_URL="http://localhost:8080"
 ENV SOLONET_VERSION=${SOLONET_VERSION}
@@ -65,11 +65,6 @@ COPY dashboard/ /dashboard/
 COPY dashboard/dashboard.conf /etc/nginx/conf.d/.
 RUN echo "window.SOLONET_VERSION='${SOLONET_VERSION}';" > /dashboard/web/version.js
 
-# Install monad package
-RUN apt-get update \
-    && apt-get install -y monad=${MONAD_VERSION} \
-    && rm -rf /var/lib/apt/lists/*
-
 # Setup solonet
 COPY solonet/   /solonet/
 COPY bin/       /usr/local/bin/
@@ -89,13 +84,24 @@ RUN echo 'deb [trusted=yes] https://repo.goreleaser.com/apt/ /' > /etc/apt/sourc
     && apt-get install -y nfpm binutils \
     && rm -rf /var/lib/apt/lists/*
 
-COPY source/*.sh /usr/local/bin/
-COPY source/nfpm.yml /app/nfpm.yml
 
 WORKDIR /app/monad-bft/
+
+COPY source/clone-monad.sh /usr/local/bin/
 RUN --mount=type=cache,id=cargo-registry,target=/usr/local/cargo/registry \
     --mount=type=cache,id=cargo-git,target=/usr/local/cargo/git \
-    clone-monad.sh && build-monad.sh && package-monad.sh
+    clone-monad.sh
+
+COPY source/build-monad.sh /usr/local/bin/
+RUN --mount=type=cache,id=cargo-registry,target=/usr/local/cargo/registry \
+    --mount=type=cache,id=cargo-git,target=/usr/local/cargo/git \
+    build-monad.sh
+
+COPY source/package-monad.sh /usr/local/bin/
+COPY source/nfpm.yml /app/nfpm.yml
+RUN --mount=type=cache,id=cargo-registry,target=/usr/local/cargo/registry \
+    --mount=type=cache,id=cargo-git,target=/usr/local/cargo/git \
+    package-monad.sh
 
 ###################################################################
 FROM monad-builder AS builder-local
@@ -107,15 +113,24 @@ RUN echo 'deb [trusted=yes] https://repo.goreleaser.com/apt/ /' > /etc/apt/sourc
     && apt-get install -y nfpm binutils \
     && rm -rf /var/lib/apt/lists/*
 
-COPY source/*.sh /usr/local/bin/
 COPY source/nfpm.yml /app/nfpm.yml
 COPY ${MONAD_LOCAL_SOURCE} /app/monad-bft/
 
 WORKDIR /app/monad-bft/
 RUN --mount=type=cache,id=cargo-registry,target=/usr/local/cargo/registry \
     --mount=type=cache,id=cargo-git,target=/usr/local/cargo/git \
-    git submodule update --init --recursive --depth 1 && \
-    build-monad.sh && package-monad.sh
+    git submodule update --init --recursive --depth 1
+
+COPY source/build-monad.sh /usr/local/bin/
+RUN --mount=type=cache,id=cargo-registry,target=/usr/local/cargo/registry \
+    --mount=type=cache,id=cargo-git,target=/usr/local/cargo/git \
+    build-monad.sh
+
+COPY source/package-monad.sh /usr/local/bin/
+COPY source/nfpm.yml /app/nfpm.yml
+RUN --mount=type=cache,id=cargo-registry,target=/usr/local/cargo/registry \
+    --mount=type=cache,id=cargo-git,target=/usr/local/cargo/git \
+    package-monad.sh
 
 ###################################################################
 FROM solonet AS install-remote
@@ -131,5 +146,8 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 ###################################################################
 FROM solonet AS install-apt
+RUN apt-get update \
+    && apt-get install -y monad=${MONAD_VERSION} \
+    && rm -rf /var/lib/apt/lists/*
 ###################################################################
 FROM install-apt AS default

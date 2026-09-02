@@ -36,6 +36,8 @@ find target/release/build -name "libsecp256k1.so" -exec cp {} ../package/usr/loc
 find target/release/build -name "libblake3.so*" -exec cp {} ../package/usr/local/lib/ \; 2>/dev/null || true
 find target/release/build -name "libc-kzg-4844.so" -exec cp {} ../package/usr/local/lib/ \; 2>/dev/null || true
 find target/release/build -name "libsilkpre.so" -exec cp {} ../package/usr/local/lib/ \; 2>/dev/null || true
+find target/release/build -name "libboost_fiber.so" -exec cp {} ../package/usr/local/lib/ \;
+cp -L /usr/lib/x86_64-linux-gnu/libsecp256k1.so.6 ../package/usr/local/lib/
 
 # Merge Debian structure
 cp -r debian/DEBIAN ../package/
