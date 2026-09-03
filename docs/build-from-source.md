@@ -21,10 +21,10 @@ cd monad-solonet/source/
 make monad-builder
 ```
 
-By default this fetches the builder Dockerfile tagged at `v0.16.1`. To use a different ref:
+By default this fetches the builder Dockerfile tagged at `v0.16.2`. To use a different ref:
 
 ```sh
-make monad-builder MONAD_BUILDER_REF=v0.16.1
+make monad-builder MONAD_BUILDER_REF=v0.16.2
 ```
 
 ---
@@ -38,7 +38,7 @@ build:
   context: monad-solonet
   target: install-apt
   args:
-    MONAD_VERSION: 0.16.1
+    MONAD_VERSION: 0.16.2
 ```
 
 Then start Solonet:
@@ -61,7 +61,7 @@ build:
   target: install-remote
   args:
     MONAD_BFT_REPO_URL: "https://github.com/category-labs/monad-bft.git"
-    MONAD_BFT_REPO_TARGET: "v0.16.1"   # branch, tag, or full commit hash
+    MONAD_BFT_REPO_TARGET: "v0.16.2"   # branch, tag, or full commit hash
 ```
 
 Then start Solonet:
@@ -88,7 +88,7 @@ This does a shallow clone of `monad-bft` into `monad-solonet/source/monad-bft/`,
 To clone a specific branch or tag:
 
 ```sh
-make clone-monad-bft MONAD_BFT_REF=v0.16.1
+make clone-monad-bft MONAD_BFT_REF=v0.16.2
 ```
 
 ### 2. Configure docker-compose.yaml
