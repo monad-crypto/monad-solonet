@@ -53,5 +53,5 @@ services:
       ## Build and run Solonet using Monad local source
 
       # target: install-local
-      # args:
-      #   MONAD_LOCAL_SOURCE: source/monad-bft/
+      # additional_contexts:
+      #   monad-bft-src: ./monad-solonet/source/

@@ -9,6 +9,9 @@ run_task() {
 run_task ../lib/env.sh
 run_task ../lib/helpers.sh
 
+# When stopping the container and we take longer than the default 10s to stop, docker will SIGKILL the process
+# and we won't have a chance to clean up the supervisord socket. So we remove it here on startup to avoid errors.
+[[ -S /var/run/supervisor.sock ]] && rm -f /var/run/supervisor.sock
 /usr/bin/supervisord -c /solonet/config/supervisord.conf &
 SUPERVISORD_PID=$!
 

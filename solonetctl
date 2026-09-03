@@ -114,6 +114,23 @@ def validate_network(data: dict[str, Any], path: Path) -> None:
             raise NetworkError(f"{path}: profile '{profile_name}'.env must be a table")
         if not isinstance(profile.get("build_args", {}), dict):
             raise NetworkError(f"{path}: profile '{profile_name}'.build_args must be a table")
+        if "build_target" in profile and not isinstance(profile["build_target"], str):
+            raise NetworkError(
+                f"{path}: profile '{profile_name}'.build_target must be a string "
+                "(a stage name in the Dockerfile, e.g. 'install-local')"
+            )
+        extra_contexts = profile.get("additional_contexts", {})
+        if not isinstance(extra_contexts, dict):
+            raise NetworkError(
+                f"{path}: profile '{profile_name}'.additional_contexts must be a table "
+                "of name = path"
+            )
+        for context_name, context_value in extra_contexts.items():
+            if not isinstance(context_value, str):
+                raise NetworkError(
+                    f"{path}: profile '{profile_name}'.additional_contexts"
+                    f".{context_name} must be a string"
+                )
         if not isinstance(profile.get("service_overrides", {}), dict):
             raise NetworkError(
                 f"{path}: profile '{profile_name}'.service_overrides must be a table"
@@ -296,10 +313,19 @@ def build_compose(network_path: Path) -> str:
             if "build_context" in profile
             else build_context
         )
-        build_args = profile.get("build_args", {})
+        build_extra: dict[str, Any] = {}
+        if profile.get("build_args"):
+            build_extra["args"] = profile["build_args"]
+        if profile.get("build_target"):
+            build_extra["target"] = profile["build_target"]
+        if profile.get("additional_contexts"):
+            build_extra["additional_contexts"] = {
+                name: value
+                for name, value in profile["additional_contexts"].items()
+            }
         build_field: Any = (
-            {"context": profile_build_context, "args": build_args}
-            if build_args
+            {"context": profile_build_context, **build_extra}
+            if build_extra
             else profile_build_context
         )
 

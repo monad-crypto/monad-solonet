@@ -7,6 +7,9 @@ MONAD_VERSION="0.0.0"
 export ASMFLAGS=-march=haswell
 export CC=gcc-15
 export CFLAGS=-march=haswell
+# The build.rs files drive cmake via the cmake crate, which defaults to recursive
+# make. Ninja parallelises far better.
+export CMAKE_GENERATOR=Ninja
 export CXX=g++-15
 export CXXFLAGS="-march=haswell"
 export GIT_COMMIT_HASH=$(git rev-parse HEAD)
@@ -31,9 +34,12 @@ cargo build -vv --release \
   --example txgen
 
 cd /app/monad-bft/monad-execution/
+# package-monad.sh strips every binary it ships, so we build Release binaries directly
 cmake \
   -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=TRUE \
   -DCMAKE_TOOLCHAIN_FILE:STRING=category/core/toolchains/gcc-avx2.cmake \
-  -DCMAKE_BUILD_TYPE:STRING=RelWithDebInfo \
+  -DCMAKE_BUILD_TYPE:STRING=Release \
   -B /build -G Ninja
-cmake --build /build --target all
+# Only build what package-monad.sh actually needs, i.e., we don't care about tests.
+# Allows us to cut build time in half and build size by a factor of 10.
+cmake --build /build --target monad monad-cli monad-mpt
