@@ -33,6 +33,7 @@ invite_accept_heartbeat_ms = 10000
 
 [peer_discovery]
 self_address = "{{ .address }}"
+self_tcp_port = {{ .tcp_port }}
 self_auth_port = {{ .auth_port }}
 self_direct_udp_auth_port = {{ .direct_udp_port }}
 self_record_seq_num = {{ .self_record_seq_num }}
@@ -47,7 +48,7 @@ ping_rate_limit_per_second = 100
 
 [network]
 bind_address_host = "0.0.0.0"
-bind_address_port = 8000
+bind_address_tcp_port = 8000
 authenticated_bind_address_port = 8001
 direct_udp_bind_address_port = 8002
 max_rtt_ms = 300
@@ -73,6 +74,7 @@ address = "{{ .address }}"
 record_seq_num = {{ .self_record_seq_num }}
 name_record_sig = "{{ .self_name_record_sig }}"
 secp256k1_pubkey = "{{ .secp256k1.public_key }}"
+tcp_port = {{ .tcp_port }}
 auth_port = {{ .auth_port }}
 direct_udp_port = {{ .direct_udp_port }}
 
@@ -88,6 +90,7 @@ address = "{{ .address }}"
 record_seq_num = {{ .self_record_seq_num }}
 name_record_sig = "{{ .self_name_record_sig }}"
 secp256k1_pubkey = "{{ .secp256k1.public_key }}"
+tcp_port = {{ .tcp_port }}
 auth_port = {{ .auth_port }}
 direct_udp_port = {{ .direct_udp_port }}
 
