@@ -53,7 +53,6 @@ sig_out=$(
   monad-sign-name-record \
     --ip "$CONTAINER_IP_ADDRESS" \
     --tcp-port 8000 \
-    --udp-port 8000 \
     --authenticated-udp-port 8001 \
     --direct-udp-port 8002 \
     --keystore-path "/shared/keys/$NODE_ID/id-secp" \
@@ -71,7 +70,8 @@ node_type: $NODE_TYPE
 stake: $STAKE_WEIGHT
 staking_register_amount: $STAKING_REGISTER_AMOUNT
 staking_delegate_amount: $STAKING_DELEGATE_AMOUNT
-address: $CONTAINER_IP_ADDRESS:8000
+address: $CONTAINER_IP_ADDRESS
+tcp_port: 8000
 auth_port: 8001
 direct_udp_port: 8002
 self_record_seq_num: 0
