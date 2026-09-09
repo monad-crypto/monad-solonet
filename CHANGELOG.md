@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.9.0](https://github.com/monad-crypto/monad-solonet/compare/v0.8.0...v0.9.0) (2026-09-09)
+
+
+### Features
+
+* arbitrary build context and faster builds ([#37](https://github.com/monad-crypto/monad-solonet/issues/37)) ([afbde47](https://github.com/monad-crypto/monad-solonet/commit/afbde4749c1f6aa4892120ec4a50f5e0934aca73))
+
+
+### Bug Fixes
+
+* **build:** bump monad to 0.16.2 and fix shared-lib resolution for source builds ([#38](https://github.com/monad-crypto/monad-solonet/issues/38)) ([3a33c10](https://github.com/monad-crypto/monad-solonet/commit/3a33c10353da6585782bc1595b15a6dc3466fbed))
+* **config:** add tcp_port to peer record and node template ([#40](https://github.com/monad-crypto/monad-solonet/issues/40)) ([7236f6d](https://github.com/monad-crypto/monad-solonet/commit/7236f6d46f1bbbe61dc8a28428323b758e1a2ffc))
+
 ## [0.8.0](https://github.com/monad-crypto/monad-solonet/compare/v0.7.0...v0.8.0) (2026-08-17)
 
 
