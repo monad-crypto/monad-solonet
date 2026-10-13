@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.9.1](https://github.com/monad-crypto/monad-solonet/compare/v0.9.0...v0.9.1) (2026-10-13)
+
+
+### Miscellaneous Chores
+
+* release 0.9.1 ([#43](https://github.com/monad-crypto/monad-solonet/issues/43)) ([2cd7439](https://github.com/monad-crypto/monad-solonet/commit/2cd7439814f70caa2a87180d2d97b20590bbd8d6))
+
 ## [0.9.0](https://github.com/monad-crypto/monad-solonet/compare/v0.8.0...v0.9.0) (2026-09-24)
 
 
