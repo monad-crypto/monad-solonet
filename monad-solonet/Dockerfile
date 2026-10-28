@@ -1,6 +1,5 @@
 FROM ubuntu:noble AS solonet
 
-ARG OTEL_VERSION=0.139.0
 ARG SOLONET_VERSION=dev
 ARG MONAD_VERSION=0.16.6
 
@@ -43,11 +42,6 @@ RUN curl -sSL https://bucket.monadinfra.com/scripts/monad-status.sh \
 ENV PATH="/root/.foundry/bin:${PATH}"
 RUN curl -L https://foundry.paradigm.xyz | bash \
     && foundryup
-
-# Install OTEL collector
-RUN curl -fsSL -o /tmp/otelcol_linux_amd64.deb \
-    "https://github.com/open-telemetry/opentelemetry-collector-releases/releases/download/v${OTEL_VERSION}/otelcol_${OTEL_VERSION}_linux_amd64.deb" \
-    && dpkg -i /tmp/otelcol_linux_amd64.deb
 
 # Install Category Labs APT sources
 COPY solonet/config/category-labs.sources /etc/apt/sources.list.d/category-labs.sources

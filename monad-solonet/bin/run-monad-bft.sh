@@ -4,7 +4,7 @@ set -e
 MONAD_BFT_CUSTOM_BIN="${MONAD_BFT_CUSTOM_BIN:-monad-node}"
 MONAD_BFT_TASKSET_CPUS="${MONAD_BFT_TASKSET_CPUS:-8,9,10,11}"
 MONAD_BFT_SQ_THREAD_CPU="${MONAD_BFT_SQ_THREAD_CPU:-8}"
-export RUST_LOG="${RUST_LOG:-debug,h2=warn,tower=warn,opentelemetry_sdk=warn,opentelemetry-otlp=warn}"
+export RUST_LOG="${RUST_LOG:-debug,h2=warn,tower=warn}"
 export REMOTE_FORKPOINT_URL="${REMOTE_FORKPOINT_URL:-http://localhost:8082/shared/forkpoint.toml}"
 export REMOTE_VALIDATORS_URL="${REMOTE_VALIDATORS_URL:-http://localhost:8082/shared/validators.toml}"
 
@@ -20,8 +20,6 @@ ARGS=(
     --control-panel-ipc-path=/home/monad/monad-bft/controlpanel.sock
     --statesync-ipc-path=/home/monad/monad-bft/statesync.sock
     --ledger-path=/home/monad/monad-bft/ledger
-    --otel-endpoint="http://0.0.0.0:4317"
-    --record-metrics-interval-seconds=1
     --validators-path=/home/monad/monad-bft/config/validators/validators.toml
     --keystore-password="${KEYSTORE_PASSWORD}"
 )

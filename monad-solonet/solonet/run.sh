@@ -33,7 +33,6 @@ run_task build-config.sh
 run_task prepare-disk.sh
 
 log "Starting monad services"
-start_service otelcol
 start_service monad-rpc
 start_service monad-execution
 start_service monad-bft
