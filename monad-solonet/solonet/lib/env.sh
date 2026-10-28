@@ -26,7 +26,7 @@ export BLS_IKM="${BLS_IKM:-}"
 export MONAD_NODE_EXTRA_CONFIG="${MONAD_NODE_EXTRA_CONFIG:-}"
 export PEERS_PATH="/shared/peers"
 export PEER_FILE="${PEERS_PATH}/${NODE_NAME}.yaml"
-export RUST_LOG=debug,h2=warn,tower=warn,opentelemetry_sdk=warn,opentelemetry-otlp=warn
+export RUST_LOG=debug,h2=warn,tower=warn
 export STAKING_AUTH="0x70997970C51812dc3A010C7d01b50e0d17dc79C8"
 export STAKING_DELEGATE_AMOUNT="10000000"
 export STAKING_REGISTER_AMOUNT="100000"
